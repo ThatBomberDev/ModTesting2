@@ -6,6 +6,7 @@ using Reloaded.Mod.Interfaces.Internal;
 using Reloaded.ModHelper;
 using NoMansSky.Api;
 using System;
+using libMBIN.NMS;
 
 #if DEBUG
 using System.Diagnostics;
@@ -58,6 +59,11 @@ namespace NoMansSky.ModTemplate
         private IGameLoop gameLoop = null!;
 
         /// <summary>
+        /// Instance of the memory manager.
+        /// </summary>
+        private IMemoryManager memoryMgr = null!;
+
+        /// <summary>
         /// Instance of the mod logger.
         /// </summary>
         private IModLogger Logger = null!;
@@ -90,7 +96,16 @@ namespace NoMansSky.ModTemplate
                 Visit https://github.com/Reloaded-Project for additional optional libraries.
             */
 
+            // Create Mog Logger.
             Logger = new ModLogger(modConfig, _logger);
+
+            // create memory manager. Doing this early in case it's needed during initialization.
+            memoryMgr = new MemoryManager();
+            memoryMgr.AddConverter(new NMSStringConverter(memoryMgr), alwaysRegister: true);
+            memoryMgr.AddConverter(new ArrayConverter(memoryMgr), alwaysRegister: true);
+            memoryMgr.AddConverter(new ListConverter(memoryMgr), alwaysRegister: true);
+            memoryMgr.AddConverter(new NMSTemplateConverter(memoryMgr), alwaysRegister: true);
+
 
             // The API publishes the instance of the Game class so mods can access it.
             // The line below is where this mod aquires the Game instance that was published.
@@ -131,7 +146,6 @@ namespace NoMansSky.ModTemplate
         public void Suspend()
         {
             /*  Some tips if you wish to support this (CanSuspend == true)
-
                 A. Undo memory modifications.
                 B. Deactivate hooks. (Reloaded.Hooks Supports This!)
             */
@@ -140,7 +154,6 @@ namespace NoMansSky.ModTemplate
         public void Resume()
         {
             /*  Some tips if you wish to support this (CanSuspend == true)
-
                 A. Redo memory modifications.
                 B. Re-activate hooks. (Reloaded.Hooks Supports This!)
             */
@@ -149,7 +162,6 @@ namespace NoMansSky.ModTemplate
         public void Unload()
         {
             /*  Some tips if you wish to support this (CanUnload == true).
-
                 A. Execute Suspend(). [Suspend should be reusable in this method]
                 B. Release any unmanaged resources, e.g. Native memory.
             */

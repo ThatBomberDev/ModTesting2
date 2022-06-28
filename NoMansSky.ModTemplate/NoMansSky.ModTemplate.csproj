@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+	  <Reference Include="libMBIN">
+	    <HintPath>..\..\..\..\Mod Builder\3.90.0.2\NMSModBuilder\libMBIN.dll</HintPath>
+	  </Reference>
 	  <Reference Include="NoMansSky.Api">
 		  <HintPath>$(RELOADEDIIMODS)\NoMansSky.Api\NoMansSky.Api.dll</HintPath>
 	  </Reference>

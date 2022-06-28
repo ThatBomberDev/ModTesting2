@@ -1,9 +1,9 @@
 {
   "ModId": "NoMansSky.ModTemplate",
-  "ModName": "NoMansSky Mod Template",
-  "ModAuthor": "Someone",
-  "ModVersion": "1.0.0",
-  "ModDescription": "Template for a No Mans Sky mods made with Reloaded 2",
+  "ModName": "No Man's Sky Testing'",
+  "ModAuthor": "ThatBomberBoi",
+  "ModVersion": "1.0.2",
+  "ModDescription": "Test NMS Mod made with Reloaded 2 and the NMS API",
   "ModDll": "NoMansSky.ModTemplate.dll",
   "ModIcon": "Preview.png",
   "ModR2RManagedDll32": "",
