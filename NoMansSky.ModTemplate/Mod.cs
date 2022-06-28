@@ -157,16 +157,17 @@ namespace NoMansSky.ModTemplate
         private void randomGeneration()
         {
             var memMgr = new MemoryManager();
-           //Disabling these since theyre read every second.
-           //memMgr.SetValue("GcTerrainGlobals.MinHighWaterLevel", Random.Range(0, 150));
-           // memMgr.SetValue("GcTerrainGlobals.MaxHighWaterLevel", Random.Range(150, 300));
+           
+           memMgr.SetValue("GcTerrainGlobals.MinHighWaterLevel", Random.Range(0, 300));
+            memMgr.SetValue("GcTerrainGlobals.MaxHighWaterLevel", Random.Range(300, 600));
 
             memMgr.SetValue("GcTerrainGlobals.NumGeneratorCalls", Random.Range(0, 16));
             memMgr.SetValue("GcTerrainGlobals.NumPolygoniseCalls", Random.Range(0, 16));
             memMgr.SetValue("GcTerrainGlobals.NumPostPolygoniseCalls", Random.Range(0, 16));
+            //Disabling these since theyre buggy.
 
-            memMgr.SetValue("GcWaterGlobals.WaveHeight", Random.Range(0, 3));
-            memMgr.SetValue("GcWaterGlobals.WaveChoppiness", Random.Range(0, 4));
+            //memMgr.SetValue("GcWaterGlobals.WaveHeight", Random.Range(0, 3));
+            //memMgr.SetValue("GcWaterGlobals.WaveChoppiness", Random.Range(0, 4));
 
             memMgr.SetValue("GcSimulationGlobals.ProceduralBuildingsGenerationSeed", Random.Range(0, 2147483647));
 
