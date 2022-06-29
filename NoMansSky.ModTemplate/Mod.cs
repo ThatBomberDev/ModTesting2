@@ -61,6 +61,7 @@ namespace NoMansSky.ModTemplate
                 {
                     Game.Player.Exosuit.SuitRefiner.Output.ID = "QUICKSILVER";
                     Game.Player.Exosuit.SuitRefiner.Output.ItemType = Api.GcInventoryType.Substance;
+                    Game.Player.Exosuit.SuitRefiner.Output.Amount = Game.Player.Exosuit.SuitRefiner.Input.Amount;
                     Logger.WriteLine("Added Custom Refiner Recipe: Silver - Quicksilver");
 
                 }
@@ -71,8 +72,20 @@ namespace NoMansSky.ModTemplate
 
             if(Keyboard.IsPressed(Key.DownArrow))
             {
-                testingNonGlobalFields();
+                //testingNonGlobalFields();
 
+                
+                    var inventory = Player.Exosuit.GetInventory();
+                    var inventoryList = inventory.GetItems();
+                    foreach (var item in inventoryList)
+                    {
+                        Logger.WriteLine($"Inventory Item: {item}");
+
+
+                    }
+                    
+
+                
 
             }
 
