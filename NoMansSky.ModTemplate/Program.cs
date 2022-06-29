@@ -8,6 +8,7 @@ using NoMansSky.Api;
 using System;
 using libMBIN.NMS;
 
+
 #if DEBUG
 using System.Diagnostics;
 #endif
@@ -96,6 +97,8 @@ namespace NoMansSky.ModTemplate
                 Visit https://github.com/Reloaded-Project for additional optional libraries.
             */
 
+            
+
             // Create Mog Logger.
             Logger = new ModLogger(modConfig, _logger);
 
@@ -125,6 +128,10 @@ namespace NoMansSky.ModTemplate
             }
 
             _mod = new Mod(_modConfig, _hooks, Logger);
+
+
+            
+            
         }
 
         private void OnConfigurationUpdated(IConfigurable obj)
@@ -140,6 +147,8 @@ namespace NoMansSky.ModTemplate
 
             // Apply settings from configuration.
             // ... your code here.
+
+            
         }
 
         /* Mod loader actions. */
@@ -175,5 +184,7 @@ namespace NoMansSky.ModTemplate
 
         /* Automatically called by the mod loader when the mod is about to be unloaded. */
         public Action Disposing { get; } = null!;
+
+
     }
 }

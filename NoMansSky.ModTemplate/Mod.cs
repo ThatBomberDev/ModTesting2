@@ -6,6 +6,8 @@ using libMBIN;
 using libMBIN.NMS.GameComponents;
 using libMBIN.NMS.Globals;
 using libMBIN.NMS.Toolkit;
+using System.Windows.Forms;
+
 
 namespace NoMansSky.ModTemplate
 {
@@ -14,6 +16,7 @@ namespace NoMansSky.ModTemplate
     /// </summary>
     public class Mod : NMSMod
     {
+        
         /// <summary>
         /// Initializes your mod along with some necessary info.
         /// </summary>
@@ -44,8 +47,11 @@ namespace NoMansSky.ModTemplate
             // Here is an example of checking for keyboard keys
             if (Keyboard.IsPressed(Key.UpArrow))
             {
-                Logger.WriteLine("The Up Arrow was just pressed!");
-                Player.Units.Value = Player.Units.Value + 100;
+                Logger.WriteLine($"Total Units: {Player.Units.Value}");
+                
+                
+                Player.Units.Value = Player.Units.Value + 16000000;
+                
             }
             
             if(Keyboard.IsPressed(Key.RightArrow))
@@ -151,7 +157,7 @@ namespace NoMansSky.ModTemplate
             memMgr.SetValue("GcSimulationGlobals.ProceduralBuildingsGenerationSeed", Random.Range(0, 2147483647));
 
             memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius", Random.Range(0, 2147483647));
-
+            
         }
 
        private void testingNonGlobalFields()
