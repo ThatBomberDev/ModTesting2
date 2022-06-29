@@ -72,7 +72,6 @@ namespace NoMansSky.ModTemplate
 
 
             logicTest();
-            editDebugGLobals();
             randomGeneration();
 
 
@@ -89,42 +88,14 @@ namespace NoMansSky.ModTemplate
 
         }
 
-        private void editDebugGLobals()
-        {
-            var memManager = new MemoryManager(); //Mem Manager
-            bool EverythingIsFree = memManager.GetValue<bool>("GcDebugOptions.EverythingIsFree"); 
-           // Logger.WriteLine($"GcDebugOptions.EverythingIsFree is set to: {EverythingIsFree.ToString()}");
-
-            if(Keyboard.IsPressed(Key.G) && EverythingIsFree == false)
-            {
-                memManager.SetValue("GcDebugOptions.EverythingIsFree", true);
-                Logger.WriteLine("Enabled Everything Is Free Cheat");
-
-
-
-            }
-            
-            if(Keyboard.IsPressed(Key.H) && EverythingIsFree == true)
-            {
-                memManager.SetValue("GcDebugOptions.EverythingIsFree", false);
-                Logger.WriteLine("Disabled Everything Is Free Cheat");
-
-
-            }
-
-
-
-                
-
-
-        }
+      
 
         private void logicTest()
         {
             var initialShield = Game.Player.Shield;
             var memMgr = new MemoryManager();
 
-            if (initialShield < 50)
+            if (initialShield < 38)
             {
 
                 
@@ -134,7 +105,11 @@ namespace NoMansSky.ModTemplate
 
                 memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 1);
 
+                memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 1);
 
+                memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.5);
+
+                memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.25);
 
             }
 
@@ -146,7 +121,11 @@ namespace NoMansSky.ModTemplate
 
                 memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 30);
 
+                memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 60);
 
+                memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.7);
+
+                memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.75);
 
             }
 
