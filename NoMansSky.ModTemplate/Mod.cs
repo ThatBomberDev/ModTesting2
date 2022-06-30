@@ -7,7 +7,7 @@ using libMBIN.NMS.GameComponents;
 using libMBIN.NMS.Globals;
 using libMBIN.NMS.Toolkit;
 using System.Windows.Forms;
-
+using libMBIN.NMS;
 
 namespace NoMansSky.ModTemplate
 {
@@ -259,11 +259,12 @@ namespace NoMansSky.ModTemplate
 
                 memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius", Random.Range(0, 2147483647));
 
-                var newRed = new libMBIN.NMS.Colour();
-                newRed.R = Random.Range(0, 255);
-                newRed.G = Random.Range(0, 255);
-                newRed.B = Random.Range(0, 255);
-                newRed.A = 1;
+
+                Colour newRed = memMgr.GetValue<Colour>("GcGameplayGlobals.ScannerColour1");
+                newRed.R = Random.Range(0.000f, 255.000f);
+                newRed.G = Random.Range(0.000f, 255.000f);
+                newRed.B = Random.Range(0.000f, 255.000f);
+                newRed.A = 1.000f;
 
                 memMgr.SetValue("GcGameplayGlobals.ScannerColour1", newRed);
             }
