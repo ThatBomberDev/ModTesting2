@@ -140,7 +140,7 @@ namespace NoMansSky.ModTemplate
             Logger.WriteLine($"Currently Loaded {GcCombatEffectsTableInMem.EffectsData.Length} effects");
             for(var i=0; i<GcCombatEffectsTableInMem.EffectsData.Length; i++)
             {
-                Logger.WriteLine($"Combat Effect: {GcCombatEffectsTableInMem.EffectsData[i].ToString()} is active");
+                Logger.WriteLine($"Combat Effect: {GcCombatEffectsTableInMem.EffectsData[i].ParticlesId.Value.ToString()} is active");
 
 
             }
@@ -259,14 +259,18 @@ namespace NoMansSky.ModTemplate
 
                 memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius", Random.Range(0, 2147483647));
 
-
+                
+                /* Disabling since LibMbin.NMS.Colour cannot be converted yet.
                 Colour newRed = memMgr.GetValue<Colour>("GcGameplayGlobals.ScannerColour1");
-                newRed.R = Random.Range(0.000f, 255.000f);
-                newRed.G = Random.Range(0.000f, 255.000f);
-                newRed.B = Random.Range(0.000f, 255.000f);
+                newRed.R = Random.Range(0.000f, 1.000f);
+                newRed.G = Random.Range(0.000f, 1.000f);
+                newRed.B = Random.Range(0.000f, 1.000f);
                 newRed.A = 1.000f;
 
                 memMgr.SetValue("GcGameplayGlobals.ScannerColour1", newRed);
+                */
+
+
             }
         }
 
