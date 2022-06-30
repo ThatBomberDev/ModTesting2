@@ -53,8 +53,20 @@ namespace NoMansSky.ModTemplate
                 Player.Units.Value = Player.Units.Value + 16000000;
                 
             }
-            
-            if(Keyboard.IsPressed(Key.RightArrow))
+
+            if(Keyboard.IsPressed(Key.P))
+            {
+                graphicsTestEnable();
+
+            }
+
+            if (Keyboard.IsPressed(Key.O))
+            {
+                graphicsTestDisable();
+
+            }
+
+            if (Keyboard.IsPressed(Key.RightArrow))
             {
 
                 if(Game.Player.Exosuit.SuitRefiner.Input.ID == "ASTEROID1")
@@ -79,10 +91,18 @@ namespace NoMansSky.ModTemplate
                     var inventoryList = inventory.GetItems();
                     foreach (var item in inventoryList)
                     {
-                        Logger.WriteLine($"Inventory Item: {item}");
+                        Logger.WriteLine($"The Player has: {item.Amount} Of {item.ID}");
 
 
                     }
+
+
+                var itemBase = inventoryList[2];
+                itemBase.ID = "Test";
+                itemBase.Amount = 16;
+                itemBase.MaxAmount = 1616;
+                itemBase.ItemType = Api.GcInventoryType.Substance;
+                inventory.AddItem(itemBase); 
                     
 
                 
@@ -107,7 +127,38 @@ namespace NoMansSky.ModTemplate
 
         }
 
-      
+        private void graphicsTestEnable()
+        {
+            var memMgr = new MemoryManager();
+            memMgr.SetValue("GcGraphicsGlobals.Redo_On", true);
+            memMgr.SetValue("GcGraphicsGlobals.ShadowQuantized", false);
+            memMgr.SetValue("GcGraphicsGlobals.DOFEnableBokeh", true);
+            memMgr.SetValue("GcGraphicsGlobals.UseImposters", false);
+            memMgr.SetValue("GcGraphicsGlobals.UseTaaResolve", true);
+            memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", true);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaBuf", true);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaVarianceBuf", true);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", true);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", true);
+            Logger.WriteLine("Applied Developer Graphical Settings");
+        }
+
+        private void graphicsTestDisable()
+        {
+            var memMgr = new MemoryManager();
+            memMgr.SetValue("GcGraphicsGlobals.Redo_On", false);
+            memMgr.SetValue("GcGraphicsGlobals.ShadowQuantized", true);
+            memMgr.SetValue("GcGraphicsGlobals.DOFEnableBokeh", false);
+            memMgr.SetValue("GcGraphicsGlobals.UseImposters", true);
+            memMgr.SetValue("GcGraphicsGlobals.UseTaaResolve", false);
+            memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", false);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaBuf", false);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaVarianceBuf", false);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", false);
+            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", false);
+            Logger.WriteLine("Disabled Developer Graphical Settings");
+        }
+
 
         private void logicTest()
         {
