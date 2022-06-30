@@ -16,7 +16,7 @@ namespace NoMansSky.ModTemplate
     /// </summary>
     public class Mod : NMSMod
     {
-        
+
         /// <summary>
         /// Initializes your mod along with some necessary info.
         /// </summary>
@@ -33,8 +33,8 @@ namespace NoMansSky.ModTemplate
             Game.OnGameJoined.AddListener(GameJoined);
 
             ModSettingBool EnableEverythingIsFree = new ModSettingBool();
-            
-           
+
+
 
 
         }
@@ -48,64 +48,50 @@ namespace NoMansSky.ModTemplate
             if (Keyboard.IsPressed(Key.UpArrow))
             {
                 Logger.WriteLine($"Total Units: {Player.Units.Value}");
-                
-                
+
+
                 Player.Units.Value = Player.Units.Value + 16000000;
-                
-            }
-
-            if(Keyboard.IsPressed(Key.P))
-            {
-                graphicsTestEnable();
 
             }
 
-            if (Keyboard.IsPressed(Key.O))
-            {
-                graphicsTestDisable();
-
-            }
-
-            if (Keyboard.IsPressed(Key.RightArrow))
+            if (Game.IsInGame)
             {
 
-                if(Game.Player.Exosuit.SuitRefiner.Input.ID == "ASTEROID1")
+
+                if (Keyboard.IsPressed(Key.L))
                 {
-                    Game.Player.Exosuit.SuitRefiner.Output.ID = "QUICKSILVER";
-                    Game.Player.Exosuit.SuitRefiner.Output.ItemType = Api.GcInventoryType.Substance;
-                    Game.Player.Exosuit.SuitRefiner.Output.Amount = Game.Player.Exosuit.SuitRefiner.Input.Amount;
-                    Logger.WriteLine("Added Custom Refiner Recipe: Silver - Quicksilver");
+                    graphicsTestEnable();
 
                 }
-                
 
+                if (Keyboard.IsPressed(Key.K))
+                {
+                    graphicsTestDisable();
 
+                }
             }
 
-            if(Keyboard.IsPressed(Key.DownArrow))
+        
+
+            if (Keyboard.IsPressed(Key.DownArrow))
             {
                 //testingNonGlobalFields();
 
-                
-                    var inventory = Player.Exosuit.GetInventory();
-                    var inventoryList = inventory.GetItems();
-                    foreach (var item in inventoryList)
-                    {
-                        Logger.WriteLine($"The Player has: {item.Amount} Of {item.ID}");
+
+                var inventory = Player.Exosuit.GetInventory();
+                var inventoryList = inventory.GetItems();
+                foreach (var item in inventoryList)
+                {
+                    Logger.WriteLine($"The Player has: {item.Amount} Of {item.ID}");
 
 
-                    }
+                }
 
-
-                var itemBase = inventoryList[2];
-                itemBase.ID = "Test";
-                itemBase.Amount = 16;
-                itemBase.MaxAmount = 1616;
-                itemBase.ItemType = Api.GcInventoryType.Substance;
-                inventory.AddItem(itemBase); 
-                    
 
                 
+
+
+
 
             }
 
@@ -116,16 +102,53 @@ namespace NoMansSky.ModTemplate
 
             if (Keyboard.IsPressed(Key.LeftArrow))
             {
+                
+
                 var mbinList = Game.MBinManager.GetAllMBIN();
                 foreach (var file in mbinList)
                 {
-                    Logger.WriteLine("[" + file.Name + "]: " + file.Address);
+                    var fileType = Game.MBinManager.GetMbinType(file.Name);
+                    Logger.WriteLine($"Struct [{file.Name}] has an address of {file.Address}, and is of type: {fileType}");
+                    
+                    
 
                 }
+                structTest();
+
             }
 
 
         }
+
+        private void structTest()
+        {
+            
+
+            var memMgr = new MemoryManager();
+            var missionTableAddress = Game.MBinManager.GetMbin("GcMissionTable").Address;
+            var missionTableInMem = memMgr.GetValue<GcMissionTable>(missionTableAddress);
+            Logger.WriteLine($"The Amount Of Missions Loaded Is: {missionTableInMem.Missions.Count}");
+            for(var i=0; i< missionTableInMem.Missions.Count; i++)
+            {
+                Logger.WriteLine($"Loaded Mission: {missionTableInMem.Missions[i].MissionID}");
+
+
+            }
+
+            var combatEffectsTableAddress = Game.MBinManager.GetMbin("GcCombatEffectsTable").Address;
+            var GcCombatEffectsTableInMem = memMgr.GetValue<GcCombatEffectsTable>(combatEffectsTableAddress);
+            Logger.WriteLine($"Currently Loaded {GcCombatEffectsTableInMem.EffectsData.Length} effects");
+            for(var i=0; i<GcCombatEffectsTableInMem.EffectsData.Length; i++)
+            {
+                Logger.WriteLine($"Combat Effect: {GcCombatEffectsTableInMem.EffectsData[i].ToString()} is active");
+
+
+            }
+
+
+        }
+            
+           
 
         private void graphicsTestEnable()
         {
@@ -135,11 +158,16 @@ namespace NoMansSky.ModTemplate
             memMgr.SetValue("GcGraphicsGlobals.DOFEnableBokeh", true);
             memMgr.SetValue("GcGraphicsGlobals.UseImposters", false);
             memMgr.SetValue("GcGraphicsGlobals.UseTaaResolve", true);
-            memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", true);
+            //memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", true);
+            
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaBuf", true);
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaVarianceBuf", true);
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", true);
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", true);
+            
+            memMgr.SetValue("GcGraphicsGlobals.ForceStreamAllTextures", true);
+            memMgr.SetValue("GcGraphicsGlobals.ForceEvictAllTextures", true);
+            memMgr.SetValue("GcGraphicsGlobals.TargetTextureMemUsageMB", 1600);
             Logger.WriteLine("Applied Developer Graphical Settings");
         }
 
@@ -151,11 +179,16 @@ namespace NoMansSky.ModTemplate
             memMgr.SetValue("GcGraphicsGlobals.DOFEnableBokeh", false);
             memMgr.SetValue("GcGraphicsGlobals.UseImposters", true);
             memMgr.SetValue("GcGraphicsGlobals.UseTaaResolve", false);
-            memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", false);
+            //memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", false);
+            
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaBuf", false);
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaVarianceBuf", false);
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", false);
             memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", false);
+            
+            memMgr.SetValue("GcGraphicsGlobals.ForceStreamAllTextures", false);
+            memMgr.SetValue("GcGraphicsGlobals.ForceEvictAllTextures", false);
+            memMgr.SetValue("GcGraphicsGlobals.TargetTextureMemUsageMB", 1280);
             Logger.WriteLine("Disabled Developer Graphical Settings");
         }
 
@@ -165,73 +198,78 @@ namespace NoMansSky.ModTemplate
             var initialShield = Game.Player.Shield;
             var memMgr = new MemoryManager();
 
-            if (initialShield < 38)
+            if (Game.IsInGame)
             {
+                if (initialShield < 38)
+                {
 
-                
-                memMgr.SetValue("GcGameplayGlobals.WaterLandingDamageMultiplier", 0.000f);
 
-                memMgr.SetValue("GcPlayerGlobals.HealthRechargeMinTimeSinceDamage", 1);
+                    memMgr.SetValue("GcGameplayGlobals.WaterLandingDamageMultiplier", 0.000f);
 
-                memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 1);
+                    memMgr.SetValue("GcPlayerGlobals.HealthRechargeMinTimeSinceDamage", 1);
 
-                memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 1);
+                    memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 1);
 
-                memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.5);
+                    memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 1);
 
-                memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.25);
+                    memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.5);
+
+                    memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.25);
+
+                }
+
+                else
+                {
+                    memMgr.SetValue("GcGameplayGlobals.WaterLandingDamageMultiplier", 0.333f);
+
+                    memMgr.SetValue("GcPlayerGlobals.HealthRechargeMinTimeSinceDamage", 10);
+
+                    memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 30);
+
+                    memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 60);
+
+                    memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.7);
+
+                    memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.75);
+
+                }
 
             }
-
-            else
-            {
-                memMgr.SetValue("GcGameplayGlobals.WaterLandingDamageMultiplier", 0.333f);
-
-                memMgr.SetValue("GcPlayerGlobals.HealthRechargeMinTimeSinceDamage", 10);
-
-                memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 30);
-
-                memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 60);
-
-                memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.7);
-
-                memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.75);
-
-            }
-
-
 
         }
 
         private void randomGeneration()
         {
-            var memMgr = new MemoryManager();
-           
-           memMgr.SetValue("GcTerrainGlobals.MinHighWaterLevel", Random.Range(0, 300));
-            memMgr.SetValue("GcTerrainGlobals.MaxHighWaterLevel", Random.Range(300, 600));
+            if (Game.IsInGame)
+            {
+                var memMgr = new MemoryManager();
 
-            memMgr.SetValue("GcTerrainGlobals.NumGeneratorCalls", Random.Range(0, 16));
-            memMgr.SetValue("GcTerrainGlobals.NumPolygoniseCalls", Random.Range(0, 16));
-            memMgr.SetValue("GcTerrainGlobals.NumPostPolygoniseCalls", Random.Range(0, 16));
-            //Disabling these since theyre buggy.
+                memMgr.SetValue("GcTerrainGlobals.MinHighWaterLevel", Random.Range(0, 300));
+                memMgr.SetValue("GcTerrainGlobals.MaxHighWaterLevel", Random.Range(300, 600));
 
-            //memMgr.SetValue("GcWaterGlobals.WaveHeight", Random.Range(0, 3));
-            //memMgr.SetValue("GcWaterGlobals.WaveChoppiness", Random.Range(0, 4));
+                memMgr.SetValue("GcTerrainGlobals.NumGeneratorCalls", Random.Range(0, 16));
+                memMgr.SetValue("GcTerrainGlobals.NumPolygoniseCalls", Random.Range(0, 16));
+                memMgr.SetValue("GcTerrainGlobals.NumPostPolygoniseCalls", Random.Range(0, 16));
+                //Disabling these since theyre buggy.
 
-            memMgr.SetValue("GcSimulationGlobals.ProceduralBuildingsGenerationSeed", Random.Range(0, 2147483647));
+                //memMgr.SetValue("GcWaterGlobals.WaveHeight", Random.Range(0, 3));
+                //memMgr.SetValue("GcWaterGlobals.WaveChoppiness", Random.Range(0, 4));
 
-            memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius", Random.Range(0, 2147483647));
-            
+                memMgr.SetValue("GcSimulationGlobals.ProceduralBuildingsGenerationSeed", Random.Range(0, 2147483647));
+
+                memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius", Random.Range(0, 2147483647));
+
+                var newRed = new libMBIN.NMS.Colour();
+                newRed.R = Random.Range(0, 255);
+                newRed.G = Random.Range(0, 255);
+                newRed.B = Random.Range(0, 255);
+                newRed.A = 1;
+
+                memMgr.SetValue("GcGameplayGlobals.ScannerColour1", newRed);
+            }
         }
 
-       private void testingNonGlobalFields()
-        {
-            var memMgr = new MemoryManager();
-
-            int primaryPlanet = memMgr.GetValue<int>("GcPlayerStateData.PrimaryPlanet");
-            Logger.WriteLine($"Primary Planet: {primaryPlanet}");
-
-        }
+      
 
 
         private void OnMainMenu()
