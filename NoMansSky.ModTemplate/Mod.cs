@@ -35,7 +35,7 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded += planetLoaded;
-
+            Game.OnWarpFinished += warpFinished;
             
 
 
@@ -130,6 +130,14 @@ namespace NoMansSky.ModTemplate
 
             }
 
+
+        }
+
+        private void warpFinished()
+        {
+            var systemData = CurrentSystem.GetSystemData();
+            Logger.WriteLine($"System Name: {systemData.Name.Value.ToString()}");
+            systemData.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
 
         }
 
@@ -299,9 +307,10 @@ namespace NoMansSky.ModTemplate
             }
             
             
-            planet.Weather.WeatherType.Weather = GcWeatherOptions.WeatherEnum.Bubble;
+            planet.Weather.WeatherType.Weather = GcWeatherOptions.WeatherEnum.Humid;
             planet.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
-            
+            planet.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
+            //planet.Weather.HeavyAir.Filename = "";
 
             
             
