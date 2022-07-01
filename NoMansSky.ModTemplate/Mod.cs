@@ -34,71 +34,19 @@ namespace NoMansSky.ModTemplate
             Game.OnProfileSelected += () => Logger.WriteLine("The player just selected a save file");
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
+            CurrentSystem.OnPlanetLoaded += planetLoaded;
 
-            ModSettingBool EnableEverythingIsFree = new ModSettingBool();
-
-            CurrentSystem.OnPlanetLoaded += (planetAddress) =>
-            {
-                var planet = CurrentSystem.GetPlanetData(planetAddress);
-                Logger.WriteLine($"PlanetLoaded: {planet.Name.Value.ToString()}");
-
-                planet.Name.Value = "Glitching Entity - Planet Under Regeneration";
-                for(var i=0; i<planet.TileColours.Length; i++)
-                {
-                    Colour testColour = new Colour();
-                    testColour.A = Random.Range(0.000f, 1.000f);
-                    testColour.R = Random.Range(0.000f, 1.000f);
-                    testColour.G = Random.Range(0.000f, 1.000f);
-                    testColour.B = Random.Range(0.000f, 1.000f);
-
-                    planet.TileColours[i] = testColour;
+            
 
 
-                }
 
-                planet.Weather.WeatherType.Weather = GcWeatherOptions.WeatherEnum.Clear;
-                planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.None;
-                planet.Weather.StormFrequency = GcPlanetWeatherData.StormFrequencyEnum.None;
-                planet.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
-                planet.Weather.WeatherIntensity = GcPlanetWeatherData.WeatherIntensityEnum.Default;
-
-                planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
-                planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
-
-                planet.GenerationData.Prime = true;
-                planet.GenerationData.Size.PlanetSize = GcPlanetSize.PlanetSizeEnum.Moon;
-
-                var seedRandomizer = new GcSeed();
-                seedRandomizer.Seed = Random.Range(0, 2147483647);
-                seedRandomizer.UseSeedValue = true;
-                planet.GenerationData.Seed = seedRandomizer;
-
-                //planet.GenerationData.Biome.Biome = GcBiomeType.BiomeEnum.Lush;
-
-                
-
-                var planetColours = planet.Colours.Palettes;
-                foreach(var pallete in planetColours)
-                {
-                    for(var i= 0; i< pallete.Colours.Length; i++)
-                    {
-                        Colour testColour = new Colour();
-                        testColour.A = Random.Range(0.000f, 1.000f);
-                        testColour.R = Random.Range(0.000f, 1.000f);
-                        testColour.G = Random.Range(0.000f, 1.000f);
-                        testColour.B = Random.Range(0.000f, 1.000f);
-                        pallete.Colours[i] = testColour;
-
-
-                    }
-
-
-                }
-                CurrentSystem.SetPlanetData(planetAddress, planet);
-            };
+            
+            
 
 
         }
+
+
 
         /// <summary>
         /// Called once every frame.
@@ -185,12 +133,209 @@ namespace NoMansSky.ModTemplate
 
         }
 
-        private void expeditionTest()
+        private void planetLoaded(long planetAddress)
         {
+
+            var planet = CurrentSystem.GetPlanetData(planetAddress);
+            Logger.WriteLine($"Planet Loaded: {planet.Name.Value.ToString()}");
+
+
+
+            for (var i = 0; i < planet.TileColours.Length; i++)
+            {
+                Colour testColour = new Colour();
+                testColour.A = Random.Range(0.000f, 1.000f);
+                testColour.R = Random.Range(0.000f, 1.000f);
+                testColour.G = Random.Range(0.000f, 1.000f);
+                testColour.B = Random.Range(0.000f, 1.000f);
+
+                planet.TileColours[i] = testColour;
+
+
+            }
+
+
+            var alienChance = Random.Range(0, 7);
+
+            if (alienChance == 0)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Traders;
+            }
+            else if (alienChance == 1)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Warriors;
+            }
+            else if (alienChance == 2)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Explorers;
+            }
+            else if (alienChance == 3)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Robots;
+            }
+            else if (alienChance == 4)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Atlas;
+            }
+            else if (alienChance == 5)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Diplomats;
+            }
+            else if (alienChance == 6)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Exotics;
+            }
+            else if (alienChance == 7)
+            {
+                planet.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.None;
+            }
+
+
+
+
+
+            /*
+            planet.CommonSubstanceID.Value = "AF_METAL";
+            planet.UncommonSubstanceID.Value = "QUICKSILVER";
+            planet.RareSubstanceID.Value = "TECHFRAG";
+            */
+
+            var atmosChance = Random.Range(0, 99);
+            if (atmosChance < 19)
+            {
+                planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.None;
+            }
+            else if(atmosChance > 19)
+            {
+                planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.Normal;
+            }
+
+            var stormFreqChance = Random.Range(0, 2);
+            if (stormFreqChance ==0)
+            {
+                planet.Weather.StormFrequency = GcPlanetWeatherData.StormFrequencyEnum.None;
+            }
+            else if(stormFreqChance == 1)
+            {
+                planet.Weather.StormFrequency = GcPlanetWeatherData.StormFrequencyEnum.Low;
+            }
+            else if (stormFreqChance == 2)
+            {
+                planet.Weather.StormFrequency = GcPlanetWeatherData.StormFrequencyEnum.High;
+            }
+
+            var weatherIntensityChance = Random.Range(0, 99);
+            if(weatherIntensityChance > 19)
+            {
+                planet.Weather.WeatherIntensity = GcPlanetWeatherData.WeatherIntensityEnum.Default;
+            }
+            else if(weatherIntensityChance < 19)
+            {
+                planet.Weather.WeatherIntensity = GcPlanetWeatherData.WeatherIntensityEnum.Extreme;
+            }
+
+            var lifeChance = Random.Range(0, 3);
+            if(lifeChance ==0)
+            {
+                planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
+            }
+            else if(lifeChance == 1)
+            {
+                planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Low;
+            }
+            else if(lifeChance == 2)
+            {
+                planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Mid;
+            }
+            else if(lifeChance == 3)
+            {
+                planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
+            }
+
+            var creatureChance = Random.Range(0, 3);
+            if(creatureChance ==0)
+            {
+                planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
+            }
+            else if(creatureChance == 1)
+            {
+                planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Low;
+            }
+            else if( creatureChance == 2)
+            {
+                planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Mid;
+            }
+            else if(creatureChance == 3)
+            {
+                planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
+            }
+
+            var primeChance = Random.Range(0, 1);
+            if(primeChance == 0)
+            {
+                planet.GenerationData.Prime = false;
+            }
+            else if(primeChance == 1)
+            {
+                planet.GenerationData.Prime = true;
+            }
+
+            var sizeChance = Random.Range(0, 3);
+            if (sizeChance == 0)
+            {
+                planet.GenerationData.Size.PlanetSize = GcPlanetSize.PlanetSizeEnum.Large;
+            }
+            else if(sizeChance == 1)
+            {
+                planet.GenerationData.Size.PlanetSize = GcPlanetSize.PlanetSizeEnum.Medium;
+            }
+            else if (sizeChance ==2)
+            {
+                planet.GenerationData.Size.PlanetSize = GcPlanetSize.PlanetSizeEnum.Small;
+            }
+            else if (sizeChance == 3)
+            {
+                planet.GenerationData.Size.PlanetSize = GcPlanetSize.PlanetSizeEnum.Moon;
+            }
+            
+            
+            planet.Weather.WeatherType.Weather = GcWeatherOptions.WeatherEnum.Bubble;
+            planet.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
             
 
+            
+            
+
+            
+            
+
+            var seedRandomizer = new GcSeed();
+            seedRandomizer.Seed = Random.Range(0, 2147483647);
+            seedRandomizer.UseSeedValue = true;
+            planet.GenerationData.Seed = seedRandomizer;
+
+            //planet.GenerationData.Biome.Biome = GcBiomeType.BiomeEnum.Lush;
 
 
+
+            var planetColours = planet.Colours.Palettes;
+            foreach (var pallete in planetColours)
+            {
+                for (var i = 0; i < pallete.Colours.Length; i++)
+                {
+                    Colour testColour = new Colour();
+                    testColour.A = Random.Range(0.000f, 1.000f);
+                    testColour.R = Random.Range(0.000f, 1.000f);
+                    testColour.G = Random.Range(0.000f, 1.000f);
+                    testColour.B = Random.Range(0.000f, 1.000f);
+                    pallete.Colours[i] = testColour;
+
+
+                }
+
+
+            }
+            CurrentSystem.SetPlanetData(planetAddress, planet);
         }
 
         private void structTest()
