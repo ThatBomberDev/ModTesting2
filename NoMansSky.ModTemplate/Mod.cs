@@ -137,7 +137,7 @@ namespace NoMansSky.ModTemplate
         {
             var systemData = CurrentSystem.GetSystemData();
             Logger.WriteLine($"System Name: {systemData.Name.Value.ToString()}");
-            systemData.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
+            systemData.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NewVintageBright;
 
         }
 
@@ -308,15 +308,17 @@ namespace NoMansSky.ModTemplate
             
             
             planet.Weather.WeatherType.Weather = GcWeatherOptions.WeatherEnum.Humid;
-            planet.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
-            planet.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
+            planet.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.FreighterAbandoned;
+            planet.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NewVintageBright;
             //planet.Weather.HeavyAir.Filename = "";
 
-            
-            
+            planet.BuildingData.PlanetRadius = 20000f;
+            planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Low;
+            planet.SentinelData.MaxActiveDrones = 20;
 
-            
-            
+
+
+
 
             var seedRandomizer = new GcSeed();
             seedRandomizer.Seed = Random.Range(0, 2147483647);
