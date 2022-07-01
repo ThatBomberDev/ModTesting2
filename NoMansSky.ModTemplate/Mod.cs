@@ -8,6 +8,7 @@ using libMBIN.NMS.Globals;
 using libMBIN.NMS.Toolkit;
 using System.Windows.Forms;
 using libMBIN.NMS;
+using System.Net.Http;
 
 namespace NoMansSky.ModTemplate
 {
@@ -16,6 +17,8 @@ namespace NoMansSky.ModTemplate
     /// </summary>
     public class Mod : NMSMod
     {
+
+        private static readonly HttpClient client = new HttpClient();
 
         /// <summary>
         /// Initializes your mod along with some necessary info.
@@ -34,7 +37,29 @@ namespace NoMansSky.ModTemplate
 
             ModSettingBool EnableEverythingIsFree = new ModSettingBool();
 
+            CurrentSystem.OnPlanetLoaded += (planetAddress) =>
+            {
+                var planet = CurrentSystem.GetPlanetData(planetAddress);
+                Logger.WriteLine($"PlanetLoaded: {planet.Name.Value.ToString()}");
+                var planetColours = planet.Colours.Palettes;
+                foreach(var pallete in planetColours)
+                {
+                    for(var i= 0; i< pallete.Colours.Length; i++)
+                    {
+                        Colour testColour = new Colour();
+                        testColour.A = 1.000f;
+                        testColour.R = 1.000f;
+                        testColour.G = 1.000f;
+                        testColour.B = 1.000f;
+                        pallete.Colours[i] = testColour;
 
+
+                    }
+
+
+                }
+                CurrentSystem.SetPlanetData(planetAddress, planet);
+            };
 
 
         }
@@ -44,13 +69,17 @@ namespace NoMansSky.ModTemplate
         /// </summary>
         public override void Update()
         {
+
+            
+
+           
+
+
             // Here is an example of checking for keyboard keys
             if (Keyboard.IsPressed(Key.UpArrow))
             {
-                Logger.WriteLine($"Total Units: {Player.Units.Value}");
 
-
-                Player.Units.Value = Player.Units.Value + 16000000;
+                
 
             }
 
@@ -116,6 +145,14 @@ namespace NoMansSky.ModTemplate
                 structTest();
 
             }
+
+
+        }
+
+        private void expeditionTest()
+        {
+            
+
 
 
         }
