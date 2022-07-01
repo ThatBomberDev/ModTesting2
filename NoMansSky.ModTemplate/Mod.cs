@@ -41,16 +41,52 @@ namespace NoMansSky.ModTemplate
             {
                 var planet = CurrentSystem.GetPlanetData(planetAddress);
                 Logger.WriteLine($"PlanetLoaded: {planet.Name.Value.ToString()}");
+
+                planet.Name.Value = "Glitching Entity - Planet Under Regeneration";
+                for(var i=0; i<planet.TileColours.Length; i++)
+                {
+                    Colour testColour = new Colour();
+                    testColour.A = Random.Range(0.000f, 1.000f);
+                    testColour.R = Random.Range(0.000f, 1.000f);
+                    testColour.G = Random.Range(0.000f, 1.000f);
+                    testColour.B = Random.Range(0.000f, 1.000f);
+
+                    planet.TileColours[i] = testColour;
+
+
+                }
+
+                planet.Weather.WeatherType.Weather = GcWeatherOptions.WeatherEnum.Clear;
+                planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.None;
+                planet.Weather.StormFrequency = GcPlanetWeatherData.StormFrequencyEnum.None;
+                planet.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NMSRetroA;
+                planet.Weather.WeatherIntensity = GcPlanetWeatherData.WeatherIntensityEnum.Default;
+
+                planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
+                planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
+
+                planet.GenerationData.Prime = true;
+                planet.GenerationData.Size.PlanetSize = GcPlanetSize.PlanetSizeEnum.Moon;
+
+                var seedRandomizer = new GcSeed();
+                seedRandomizer.Seed = Random.Range(0, 2147483647);
+                seedRandomizer.UseSeedValue = true;
+                planet.GenerationData.Seed = seedRandomizer;
+
+                //planet.GenerationData.Biome.Biome = GcBiomeType.BiomeEnum.Lush;
+
+                
+
                 var planetColours = planet.Colours.Palettes;
                 foreach(var pallete in planetColours)
                 {
                     for(var i= 0; i< pallete.Colours.Length; i++)
                     {
                         Colour testColour = new Colour();
-                        testColour.A = 1.000f;
-                        testColour.R = 1.000f;
-                        testColour.G = 1.000f;
-                        testColour.B = 1.000f;
+                        testColour.A = Random.Range(0.000f, 1.000f);
+                        testColour.R = Random.Range(0.000f, 1.000f);
+                        testColour.G = Random.Range(0.000f, 1.000f);
+                        testColour.B = Random.Range(0.000f, 1.000f);
                         pallete.Colours[i] = testColour;
 
 
