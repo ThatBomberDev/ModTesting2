@@ -35,7 +35,7 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded += planetLoaded;
-            Game.OnWarpFinished += warpFinished;
+            
             
 
 
@@ -133,16 +133,13 @@ namespace NoMansSky.ModTemplate
 
         }
 
-        private void warpFinished()
-        {
-            var systemData = CurrentSystem.GetSystemData();
-            Logger.WriteLine($"System Name: {systemData.Name.Value.ToString()}");
-            systemData.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NewVintageBright;
-
-        }
+       
 
         private void planetLoaded(long planetAddress)
         {
+            
+            CurrentSystem.GetSystemData().ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NewVintageBright;
+
 
             var planet = CurrentSystem.GetPlanetData(planetAddress);
             Logger.WriteLine($"Planet Loaded: {planet.Name.Value.ToString()}");
@@ -313,9 +310,28 @@ namespace NoMansSky.ModTemplate
             //planet.Weather.HeavyAir.Filename = "";
 
             planet.BuildingData.PlanetRadius = 20000f;
-            planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Low;
-            planet.SentinelData.MaxActiveDrones = 20;
 
+            var aeronChance = Random.Range(0, 2);
+            if (aeronChance == 0)
+            {
+                planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Low;
+                planet.SentinelData.MaxActiveDrones = Random.Range(1, 5);
+            }
+            else if (aeronChance == 1)
+            {
+                planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Default;
+                planet.SentinelData.MaxActiveDrones = Random.Range(6, 11);
+
+            }
+            else if (aeronChance == 2)
+            {
+                planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Aggressive;
+                planet.SentinelData.MaxActiveDrones = Random.Range(12, 17);
+
+            }
+
+            planet.FlybyTimer.x = 600;
+            planet.FlybyTimer.y = 600;
 
 
 
@@ -327,7 +343,37 @@ namespace NoMansSky.ModTemplate
 
             //planet.GenerationData.Biome.Biome = GcBiomeType.BiomeEnum.Lush;
 
+            foreach(var index in planet.TileTypeIndices)
+            {
+                planet.TileTypeSet = Random.Range(0, index);
+            }
 
+            foreach(var feature in planet.Terrain.Features)
+            {
+                feature.Active = true;
+
+
+            }
+
+            planet.Terrain.MinimumCaveDepth = 100;
+
+            var sandwormData = new GcCreatureSpawnData();
+            sandwormData.Resource.Filename.Value = "MODELS/PLANETS/CREATURES/SANDWORM/SANDWORM.SCENE.MBIN";
+            sandwormData.Resource.Seed.Seed = Random.Range(0, 2147483647);
+            planet.SpawnData.Creatures.Add(sandwormData);
+
+            foreach(var creature in planet.SpawnData.Creatures)
+            {
+                creature.AllowFur = true;
+                creature.MaxScale = 10f;
+                creature.MinScale = 0.5f;
+                creature.CreatureMaxGroupSize = 50;
+                creature.CreatureMinGroupSize = 20;
+                creature.Herd = true;
+            }
+
+            planet.GenerationData.CreatureRoles.HasSandWorms = true;
+            
 
             var planetColours = planet.Colours.Palettes;
             foreach (var pallete in planetColours)
