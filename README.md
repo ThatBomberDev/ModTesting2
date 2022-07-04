@@ -6,7 +6,7 @@ For more info on modding No Mans Sky, check out the modding wiki here: [https://
 ## Goals
 • Testing new API features to get a sense of usage. <br>
 • Implementing new mod ideas and playtesting before creating an independent mod. <br>
-• Create a sort of "Mod-Pack" of tested, untested and unreleased features and ideas as an experimental ground for public usage as an example and a jumping ground to create new ideas. <br>
+• Create a sort of "Mod-Pack" of tested, untested and unreleased features and ideas as an experimental ground for public usage as an example and a jumping groujd to create new ideas. <br>
 • Acting as an alternate source of examples for new users. <br>
 
 
