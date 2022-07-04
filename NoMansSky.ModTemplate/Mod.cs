@@ -35,13 +35,14 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded += planetLoaded;
-            
-            
+            CurrentSystem.OnSystemLoaded += systemChanges;
 
 
 
-            
-            
+
+
+
+
 
 
         }
@@ -133,12 +134,63 @@ namespace NoMansSky.ModTemplate
 
         }
 
-       
+       private void systemChanges(long systemAddress)
+        {
+            Logger.WriteLine("Aquired System Address");
+
+            var system = CurrentSystem.GetSystemData();
+            system.Planets = 8;
+
+            system.Name.Value = "Abyssal System: C0??uP7Ed";
+
+            system.Light.SunColour.R = Random.Range(0.000f, 1.000f);
+            system.Light.SunColour.G = Random.Range(0.000f, 1.000f);
+            system.Light.SunColour.B = Random.Range(0.000f, 1.000f);
+            system.Light.SunColour.A = Random.Range(0.000f, 1.000f);
+
+            system.Light.LightColour.R = Random.Range(0.000f, 1.000f);
+            system.Light.LightColour.G = Random.Range(0.000f, 1.000f);
+            system.Light.LightColour.B = Random.Range(0.000f, 1.000f);
+            system.Light.LightColour.A = Random.Range(0.000f, 1.000f);
+
+            var systemColours = system.Colours.Palettes;
+            foreach (var pallete in systemColours)
+            {
+                for (var i = 0; i < pallete.Colours.Length; i++)
+                {
+                    Colour testColour = new Colour();
+                    testColour.A = Random.Range(0.000f, 1.000f);
+                    testColour.R = Random.Range(0.000f, 1.000f);
+                    testColour.G = Random.Range(0.000f, 1.000f);
+                    testColour.B = Random.Range(0.000f, 1.000f);
+                    pallete.Colours[i] = testColour;
+
+
+                }
+
+
+            }
+
+            foreach (var planetPos in system.PlanetPositions)
+            {
+                var posRandomizer = new Vector3f();
+                posRandomizer.x = Random.Range(0, 8388608);
+                posRandomizer.y = Random.Range(0, 524288);
+                posRandomizer.z = Random.Range(0, 8388608);
+                planetPos.x = posRandomizer.x;
+                planetPos.y = posRandomizer.y;
+                planetPos.z = posRandomizer.z;
+
+
+            }
+
+
+        }
 
         private void planetLoaded(long planetAddress)
         {
             
-            CurrentSystem.GetSystemData().ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NewVintageBright;
+            
 
 
             var planet = CurrentSystem.GetPlanetData(planetAddress);
@@ -333,8 +385,19 @@ namespace NoMansSky.ModTemplate
             planet.FlybyTimer.x = 600;
             planet.FlybyTimer.y = 600;
 
+            planet.Clouds.Seed.Seed = ((long)Random.Range(0, 9223372036854775807));
+            Logger.WriteLine($"Cloud Seed: {planet.Clouds.Seed.Seed}");
+            planet.Clouds.Seed.UseSeedValue = true;
+
+            //Temp override for airless planets
+            if(planet.GenerationData.Biome.Biome == GcBiomeType.BiomeEnum.Dead)
+            {
+                planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.Normal;
 
 
+            }
+
+            
 
             var seedRandomizer = new GcSeed();
             seedRandomizer.Seed = Random.Range(0, 2147483647);
@@ -535,7 +598,7 @@ namespace NoMansSky.ModTemplate
                 memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius", Random.Range(0, 2147483647));
 
                 
-                /* Disabling since LibMbin.NMS.Colour cannot be converted yet.
+                /*
                 Colour newRed = memMgr.GetValue<Colour>("GcGameplayGlobals.ScannerColour1");
                 newRed.R = Random.Range(0.000f, 1.000f);
                 newRed.G = Random.Range(0.000f, 1.000f);
@@ -543,7 +606,7 @@ namespace NoMansSky.ModTemplate
                 newRed.A = 1.000f;
 
                 memMgr.SetValue("GcGameplayGlobals.ScannerColour1", newRed);
-                */
+               */ 
 
 
             }
