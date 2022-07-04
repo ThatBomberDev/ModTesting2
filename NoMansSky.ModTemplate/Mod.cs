@@ -35,7 +35,7 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded += planetLoaded;
-            CurrentSystem.OnSystemLoaded += systemChanges;
+            //CurrentSystem.OnSystemLoaded += systemChanges;
 
 
 
@@ -68,22 +68,7 @@ namespace NoMansSky.ModTemplate
 
             }
 
-            if (Game.IsInGame)
-            {
-
-
-                if (Keyboard.IsPressed(Key.L))
-                {
-                    graphicsTestEnable();
-
-                }
-
-                if (Keyboard.IsPressed(Key.K))
-                {
-                    graphicsTestDisable();
-
-                }
-            }
+            
 
         
 
@@ -143,15 +128,15 @@ namespace NoMansSky.ModTemplate
 
             system.Name.Value = "Abyssal System: C0??uP7Ed";
 
-            system.Light.SunColour.R = Random.Range(0.000f, 1.000f);
-            system.Light.SunColour.G = Random.Range(0.000f, 1.000f);
-            system.Light.SunColour.B = Random.Range(0.000f, 1.000f);
-            system.Light.SunColour.A = Random.Range(0.000f, 1.000f);
+            system.Light.SunColour.R =  Random.Range(0.000f, 1.000f);
+            system.Light.SunColour.G =  Random.Range(0.000f, 1.000f);
+            system.Light.SunColour.B =  Random.Range(0.000f, 1.000f);
+            system.Light.SunColour.A =  Random.Range(0.000f, 1.000f);
 
-            system.Light.LightColour.R = Random.Range(0.000f, 1.000f);
-            system.Light.LightColour.G = Random.Range(0.000f, 1.000f);
-            system.Light.LightColour.B = Random.Range(0.000f, 1.000f);
-            system.Light.LightColour.A = Random.Range(0.000f, 1.000f);
+            system.Light.LightColour.R =  Random.Range(0.000f, 1.000f);
+            system.Light.LightColour.G =  Random.Range(0.000f, 1.000f);
+            system.Light.LightColour.B =  Random.Range(0.000f, 1.000f);
+            system.Light.LightColour.A =  Random.Range(0.000f, 1.000f);
 
             var systemColours = system.Colours.Palettes;
             foreach (var pallete in systemColours)
@@ -159,10 +144,10 @@ namespace NoMansSky.ModTemplate
                 for (var i = 0; i < pallete.Colours.Length; i++)
                 {
                     Colour testColour = new Colour();
-                    testColour.A = Random.Range(0.000f, 1.000f);
-                    testColour.R = Random.Range(0.000f, 1.000f);
-                    testColour.G = Random.Range(0.000f, 1.000f);
-                    testColour.B = Random.Range(0.000f, 1.000f);
+                    testColour.A =  Random.Range(0.000f, 1.000f);
+                    testColour.R =  Random.Range(0.000f, 1.000f);
+                    testColour.G =  Random.Range(0.000f, 1.000f);
+                    testColour.B =  Random.Range(0.000f, 1.000f);
                     pallete.Colours[i] = testColour;
 
 
@@ -174,9 +159,9 @@ namespace NoMansSky.ModTemplate
             foreach (var planetPos in system.PlanetPositions)
             {
                 var posRandomizer = new Vector3f();
-                posRandomizer.x = Random.Range(0, 8388608);
-                posRandomizer.y = Random.Range(0, 524288);
-                posRandomizer.z = Random.Range(0, 8388608);
+                posRandomizer.x =  Random.Range(0, 8388608);
+                posRandomizer.y =  Random.Range(0, 524288);
+                posRandomizer.z =  Random.Range(0, 8388608);
                 planetPos.x = posRandomizer.x;
                 planetPos.y = posRandomizer.y;
                 planetPos.z = posRandomizer.z;
@@ -201,10 +186,10 @@ namespace NoMansSky.ModTemplate
             for (var i = 0; i < planet.TileColours.Length; i++)
             {
                 Colour testColour = new Colour();
-                testColour.A = Random.Range(0.000f, 1.000f);
-                testColour.R = Random.Range(0.000f, 1.000f);
-                testColour.G = Random.Range(0.000f, 1.000f);
-                testColour.B = Random.Range(0.000f, 1.000f);
+                testColour.A =  Random.Range(0.000f, 1.000f);
+                testColour.R =  Random.Range(0.000f, 1.000f);
+                testColour.G =  Random.Range(0.000f, 1.000f);
+                testColour.B =  Random.Range(0.000f, 1.000f);
 
                 planet.TileColours[i] = testColour;
 
@@ -212,7 +197,7 @@ namespace NoMansSky.ModTemplate
             }
 
 
-            var alienChance = Random.Range(0, 7);
+            var alienChance =  Random.Range(0, 7);
 
             if (alienChance == 0)
             {
@@ -257,17 +242,17 @@ namespace NoMansSky.ModTemplate
             planet.RareSubstanceID.Value = "TECHFRAG";
             */
 
-            var atmosChance = Random.Range(0, 99);
-            if (atmosChance < 19)
+            var atmosChance =  Random.Range(0, 99);
+            if (atmosChance < 29)
             {
                 planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.None;
             }
-            else if(atmosChance > 19)
+            else if(atmosChance > 29)
             {
                 planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.Normal;
             }
 
-            var stormFreqChance = Random.Range(0, 2);
+            var stormFreqChance =  Random.Range(0, 2);
             if (stormFreqChance ==0)
             {
                 planet.Weather.StormFrequency = GcPlanetWeatherData.StormFrequencyEnum.None;
@@ -281,7 +266,7 @@ namespace NoMansSky.ModTemplate
                 planet.Weather.StormFrequency = GcPlanetWeatherData.StormFrequencyEnum.High;
             }
 
-            var weatherIntensityChance = Random.Range(0, 99);
+            var weatherIntensityChance =  Random.Range(0, 99);
             if(weatherIntensityChance > 19)
             {
                 planet.Weather.WeatherIntensity = GcPlanetWeatherData.WeatherIntensityEnum.Default;
@@ -291,7 +276,7 @@ namespace NoMansSky.ModTemplate
                 planet.Weather.WeatherIntensity = GcPlanetWeatherData.WeatherIntensityEnum.Extreme;
             }
 
-            var lifeChance = Random.Range(0, 3);
+            var lifeChance =  Random.Range(0, 3);
             if(lifeChance ==0)
             {
                 planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
@@ -309,7 +294,7 @@ namespace NoMansSky.ModTemplate
                 planet.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
             }
 
-            var creatureChance = Random.Range(0, 3);
+            var creatureChance =  Random.Range(0, 3);
             if(creatureChance ==0)
             {
                 planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
@@ -327,7 +312,7 @@ namespace NoMansSky.ModTemplate
                 planet.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
             }
 
-            var primeChance = Random.Range(0, 1);
+            var primeChance =  Random.Range(0, 1);
             if(primeChance == 0)
             {
                 planet.GenerationData.Prime = false;
@@ -337,7 +322,7 @@ namespace NoMansSky.ModTemplate
                 planet.GenerationData.Prime = true;
             }
 
-            var sizeChance = Random.Range(0, 3);
+            var sizeChance =  Random.Range(0, 3);
             if (sizeChance == 0)
             {
                 planet.GenerationData.Size.PlanetSize = GcPlanetSize.PlanetSizeEnum.Large;
@@ -361,54 +346,50 @@ namespace NoMansSky.ModTemplate
             planet.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.NewVintageBright;
             //planet.Weather.HeavyAir.Filename = "";
 
-            planet.BuildingData.PlanetRadius = 20000f;
+            
 
-            var aeronChance = Random.Range(0, 2);
+            
+            var aeronChance =  Random.Range(0, 2);
             if (aeronChance == 0)
             {
                 planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Low;
-                planet.SentinelData.MaxActiveDrones = Random.Range(1, 5);
+                planet.SentinelData.MaxActiveDrones =  Random.Range(1, 5);
             }
             else if (aeronChance == 1)
             {
                 planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Default;
-                planet.SentinelData.MaxActiveDrones = Random.Range(6, 11);
+                planet.SentinelData.MaxActiveDrones =  Random.Range(6, 11);
 
             }
             else if (aeronChance == 2)
             {
                 planet.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Aggressive;
-                planet.SentinelData.MaxActiveDrones = Random.Range(12, 17);
+                planet.SentinelData.MaxActiveDrones =  Random.Range(12, 17);
 
             }
-
+            
             planet.FlybyTimer.x = 600;
             planet.FlybyTimer.y = 600;
 
-            planet.Clouds.Seed.Seed = ((long)Random.Range(0, 9223372036854775807));
+            /*
+            planet.Clouds.Seed.Seed = ((long) Random.Range(0, 9223372036854775807));
             Logger.WriteLine($"Cloud Seed: {planet.Clouds.Seed.Seed}");
             planet.Clouds.Seed.UseSeedValue = true;
-
-            //Temp override for airless planets
-            if(planet.GenerationData.Biome.Biome == GcBiomeType.BiomeEnum.Dead)
-            {
-                planet.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.Normal;
-
-
-            }
-
+            */
             
 
+            
+            /*
             var seedRandomizer = new GcSeed();
-            seedRandomizer.Seed = Random.Range(0, 2147483647);
+            seedRandomizer.Seed = ((long) Random.Range(0, 9223372036854775807));
             seedRandomizer.UseSeedValue = true;
             planet.GenerationData.Seed = seedRandomizer;
-
-            //planet.GenerationData.Biome.Biome = GcBiomeType.BiomeEnum.Lush;
+            */
+            
 
             foreach(var index in planet.TileTypeIndices)
             {
-                planet.TileTypeSet = Random.Range(0, index);
+                planet.TileTypeSet =  Random.Range(0, index);
             }
 
             foreach(var feature in planet.Terrain.Features)
@@ -418,12 +399,9 @@ namespace NoMansSky.ModTemplate
 
             }
 
-            planet.Terrain.MinimumCaveDepth = 100;
+            planet.Terrain.MinimumCaveDepth = 500;
 
-            var sandwormData = new GcCreatureSpawnData();
-            sandwormData.Resource.Filename.Value = "MODELS/PLANETS/CREATURES/SANDWORM/SANDWORM.SCENE.MBIN";
-            sandwormData.Resource.Seed.Seed = Random.Range(0, 2147483647);
-            planet.SpawnData.Creatures.Add(sandwormData);
+            
 
             foreach(var creature in planet.SpawnData.Creatures)
             {
@@ -444,10 +422,10 @@ namespace NoMansSky.ModTemplate
                 for (var i = 0; i < pallete.Colours.Length; i++)
                 {
                     Colour testColour = new Colour();
-                    testColour.A = Random.Range(0.000f, 1.000f);
-                    testColour.R = Random.Range(0.000f, 1.000f);
-                    testColour.G = Random.Range(0.000f, 1.000f);
-                    testColour.B = Random.Range(0.000f, 1.000f);
+                    testColour.A =  Random.Range(0.000f, 1.000f);
+                    testColour.R =  Random.Range(0.000f, 1.000f);
+                    testColour.G =  Random.Range(0.000f, 1.000f);
+                    testColour.B =  Random.Range(0.000f, 1.000f);
                     pallete.Colours[i] = testColour;
 
 
@@ -487,7 +465,7 @@ namespace NoMansSky.ModTemplate
         }
             
            
-
+        /*
         private void graphicsTestEnable()
         {
             var memMgr = new MemoryManager();
@@ -529,7 +507,7 @@ namespace NoMansSky.ModTemplate
             memMgr.SetValue("GcGraphicsGlobals.TargetTextureMemUsageMB", 1280);
             Logger.WriteLine("Disabled Developer Graphical Settings");
         }
-
+        */
 
         private void logicTest()
         {
@@ -582,20 +560,17 @@ namespace NoMansSky.ModTemplate
             {
                 var memMgr = new MemoryManager();
 
-                memMgr.SetValue("GcTerrainGlobals.MinHighWaterLevel", Random.Range(0, 300));
-                memMgr.SetValue("GcTerrainGlobals.MaxHighWaterLevel", Random.Range(300, 600));
+                memMgr.SetValue("GcTerrainGlobals.MinHighWaterLevel",  Random.Range(0, 300));
+                memMgr.SetValue("GcTerrainGlobals.MaxHighWaterLevel",  Random.Range(300, 600));
 
-                memMgr.SetValue("GcTerrainGlobals.NumGeneratorCalls", Random.Range(0, 16));
-                memMgr.SetValue("GcTerrainGlobals.NumPolygoniseCalls", Random.Range(0, 16));
-                memMgr.SetValue("GcTerrainGlobals.NumPostPolygoniseCalls", Random.Range(0, 16));
-                //Disabling these since theyre buggy.
+                memMgr.SetValue("GcTerrainGlobals.NumGeneratorCalls",  Random.Range(0, 16));
+                memMgr.SetValue("GcTerrainGlobals.NumPolygoniseCalls",  Random.Range(0, 16));
+                memMgr.SetValue("GcTerrainGlobals.NumPostPolygoniseCalls",  Random.Range(0, 16));
+               
 
-                //memMgr.SetValue("GcWaterGlobals.WaveHeight", Random.Range(0, 3));
-                //memMgr.SetValue("GcWaterGlobals.WaveChoppiness", Random.Range(0, 4));
+                memMgr.SetValue("GcSimulationGlobals.ProceduralBuildingsGenerationSeed",  Random.Range(0, 2147483647));
 
-                memMgr.SetValue("GcSimulationGlobals.ProceduralBuildingsGenerationSeed", Random.Range(0, 2147483647));
-
-                memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius", Random.Range(0, 2147483647));
+                memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius",  Random.Range(0, 2147483647));
 
                 
                 /*
