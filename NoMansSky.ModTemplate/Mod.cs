@@ -33,7 +33,7 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded.AddListener(planet => planetLoaded(planet));
-            
+            //CurrentSystem.OnSystemLoaded.AddListener(systemLoaded);
 
 
 
@@ -52,7 +52,11 @@ namespace NoMansSky.ModTemplate
         /// </summary>
         public override void Update()
         {
+            if(Keyboard.IsPressed(Key.UpArrow))
+            {
+                
 
+            }
 
             
 
@@ -105,13 +109,199 @@ namespace NoMansSky.ModTemplate
 
         }
 
+        private void systemLoaded()
+        {
+            CurrentSystem.ModifySystemData(systemData =>
+            {
+                Logger.WriteLine($"System {systemData.Name.Value} has been loaded");
+
+            }
+            );
+
+        }
 
         private void planetLoaded(IPlanet planet)
         {
             planet.ModifyPlanetData(planetData =>
             {
-                planetData.SentinelData.MaxActiveDrones = 100;
-                planetData.Terrain.MinimumCaveDepth = 500;
+                //Testing
+                Logger.WriteLine($"Planet {planetData.Name.Value} has been loaded");
+                
+                //Randomize Colours
+                foreach(var pallette in planetData.Colours.Palettes)
+                {
+                    for(var i=0; i< pallette.Colours.Length; i++)
+                    {
+                        var colourRandomizer = new Colour();
+                        colourRandomizer.R = Random.Range(0.000f, 1.000f);
+                        colourRandomizer.G = Random.Range(0.000f, 1.000f);
+                        colourRandomizer.B = Random.Range(0.000f, 1.000f);
+                        colourRandomizer.A = Random.Range(0.000f, 1.000f);
+                        pallette.Colours[i] = colourRandomizer;
+
+                        
+                    }
+
+                }
+
+                //Randomize Atmos
+                var atmosChance = Random.Range(0, 100);
+                if (atmosChance < 30)
+                {
+                    planetData.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.None;
+                }
+                else if(atmosChance > 30)
+                {
+                    planetData.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.Normal;
+                }
+                
+                //Randomize Sentinels
+                var aeronChance = Random.Range(0, 2);
+                if(aeronChance == 0)
+                {
+                    planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Low;
+                    planetData.SentinelData.MaxActiveDrones = Random.Range(0, 8);
+                }
+                else if(aeronChance == 1)
+                {
+                    planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Default;
+                    planetData.SentinelData.MaxActiveDrones = Random.Range(9, 16);
+                }
+                else if (aeronChance == 2)
+                {
+                    planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Aggressive;
+                    planetData.SentinelData.MaxActiveDrones = Random.Range(17, 24);
+                }
+
+                //Randomize Resource Chance
+                var resourceChance  = Random.Range(0, 1);
+                if(resourceChance == 0)
+                {
+                    planetData.ResourceLevel = GcPlanetData.ResourceLevelEnum.Low;
+                }
+                else if (resourceChance == 1)
+                {
+                    planetData.ResourceLevel = GcPlanetData.ResourceLevelEnum.High;
+                }
+
+                //Randomize Life (Flora) Chance
+                var lifeChance = Random.Range(0, 3);
+                if(lifeChance == 0)
+                {
+                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
+                }
+                else if (lifeChance == 1)
+                {
+                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Low;
+                }
+                else if (lifeChance == 2)
+                {
+                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Mid;
+                }
+                else if (lifeChance == 2)
+                {
+                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
+                }
+
+                //Randomize Creature(Fauna) Chance
+                var creatureChance = Random.Range(0, 3);
+                if (creatureChance == 0)
+                {
+                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
+                }
+                else if (creatureChance == 1)
+                {
+                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Low;
+                }
+                else if (creatureChance == 2)
+                {
+                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Mid;
+                }
+                else if (creatureChance == 2)
+                {
+                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
+                }
+
+                //Activate All Terrain Features
+                foreach(var feature in planetData.Terrain.Features)
+                {
+                    feature.Active = true;
+                }
+
+                //Randomize Building Density
+                var buildingChance = Random.Range(0, 5);
+                if (buildingChance == 0)
+                {
+                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Dead;
+                }
+                else if (buildingChance == 1)
+                {
+                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Low;
+                }
+                else if (buildingChance == 2)
+                {
+                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Mid;
+                }
+                else if (buildingChance == 3)
+                {
+                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Full;
+                }
+                else if (buildingChance == 4)
+                {
+                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Weird;
+                }
+                else if (buildingChance == 4)
+                {
+                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.HalfWeird;
+                }
+
+                //Randomize Alien Race Chance
+                var alienChance = Random.Range(0, 2);
+                if(alienChance == 0)
+                {
+                    planetData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Traders;
+                }
+                else if (alienChance == 1)
+                {
+                    planetData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Warriors;
+                }
+                else if (alienChance == 2)
+                {
+                    planetData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Explorers;
+                }
+
+                //Randomize Water HeavyAir Colours
+                foreach(var heavyAirColour in planetData.Water.HeavyAir.Colours)
+                {
+                    var colourRandomizer = new Colour();
+                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
+                    heavyAirColour.Colour1 = colourRandomizer;
+                    heavyAirColour.Colour2 = colourRandomizer;
+
+                }
+
+                //Randomize Weather HeavyAir Colours
+                foreach(var weatherHeavyAir in planetData.Weather.HeavyAir.Colours)
+                {
+                    var colourRandomizer = new Colour();
+                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
+                    weatherHeavyAir.Colour1 = colourRandomizer;
+                    weatherHeavyAir.Colour2 = colourRandomizer;
+
+                }
+
+                //Change Screen Filters
+                planetData.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.FreighterAbandoned;
+                planetData.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.Drama;
+
+                //Enlarge Caves
+                planetData.Terrain.MinimumCaveDepth = 100;
 
             }
             );
