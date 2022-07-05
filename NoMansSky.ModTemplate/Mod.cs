@@ -54,10 +54,32 @@ namespace NoMansSky.ModTemplate
         {
             if(Keyboard.IsPressed(Key.UpArrow))
             {
-                
+                foreach(var planet in CurrentSystem.Planets)
+                {
+                    var planetData = planet.GetPlanetData();
+                    Logger.WriteLine($"Planet {planetData.Name.Value.ToString()} has a seed {planetData.GenerationData.Seed.Seed.ToHex()}");
+
+
+                }
 
             }
 
+            if(Keyboard.IsPressed(Key.RightArrow))
+            {
+                foreach (var planet in CurrentSystem.Planets)
+                {
+                    var planetData = planet.GetPlanetData();
+
+                    var seedRandomizer = new GcSeed();
+                    seedRandomizer.Seed = ((long)Random.Range(0, 18446744073709551615));
+                    planetData.GenerationData.Seed.Seed = seedRandomizer.Seed;
+                    Logger.WriteLine($"Seeds Randomized");
+                    planet.SetPlanetData(planetData);
+
+                }
+
+
+            }
             
 
         
@@ -162,7 +184,12 @@ namespace NoMansSky.ModTemplate
             {
                 //Testing
                 Logger.WriteLine($"{planetData.GenerationData.Biome.Biome.ToString()} Planet {planetData.Name.Value} has been loaded");
-                
+
+                //Testing Names
+                var nameString = new NMSString0x80();
+                nameString = "Testing Name";
+                planetData.Name = nameString;
+
                 //Randomize Colours
                 foreach(var pallette in planetData.Colours.Palettes)
                 {
