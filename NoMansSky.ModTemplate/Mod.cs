@@ -33,8 +33,8 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded.AddListener(planet => planetLoaded(planet));
-            //CurrentSystem.OnSystemLoaded.AddListener(systemLoaded);
-
+            CurrentSystem.OnSystemLoaded.AddListener(systemLoaded);
+            Game.OnEnvironmentObjectLoaded.AddListener(environmentObject => envLoaded(environmentObject));
 
 
 
@@ -113,10 +113,46 @@ namespace NoMansSky.ModTemplate
         {
             CurrentSystem.ModifySystemData(systemData =>
             {
-                Logger.WriteLine($"System {systemData.Name.Value} has been loaded");
+                Logger.WriteLine($"System {systemData.Name.Value.ToString()} has been loaded");
+                Logger.WriteLine($"System Seed: {systemData.Seed.Seed.ToString()}");
+                foreach(var input in systemData.PlanetGenerationInputs)
+                {
+                    Logger.WriteLine($"{systemData.Name.Value.ToString()} generates a {input.PlanetSize.PlanetSize.ToString()} {input.Biome.Biome.ToString()} planet with a sub-biome of {input.BiomeSubType.BiomeSubType.ToString()} and a seed of {input.Seed.Seed.ToString()}");
+
+
+                }
 
             }
             );
+
+        }
+
+        //Testing Env Objects
+        private void envLoaded(IEnvironmentObject environmentObject)
+        {
+
+
+            environmentObject.ModifySpawnData(objData =>
+                {
+                    foreach(var creature in objData.Creatures)
+                    {
+                        Logger.WriteLine($"Modifying {creature.CreatureID} creature");
+                        creature.AllowFur = true;
+                        creature.CreatureMaxGroupSize = 200;
+                        creature.CreatureMinGroupSize = 100;
+                        creature.MaxScale = 500;
+                        creature.MinScale = 100;
+                        //creature.Resource.AltId = "_VERS_1 _HEADB_1 _TOPB_1 _EYESE_1 _BRHACC_7A _TREX_4 _RHIHACC_10";
+                    }
+                    
+
+                 
+
+                }
+
+                );
+            
+
 
         }
 
@@ -125,7 +161,7 @@ namespace NoMansSky.ModTemplate
             planet.ModifyPlanetData(planetData =>
             {
                 //Testing
-                Logger.WriteLine($"Planet {planetData.Name.Value} has been loaded");
+                Logger.WriteLine($"{planetData.GenerationData.Biome.Biome.ToString()} Planet {planetData.Name.Value} has been loaded");
                 
                 //Randomize Colours
                 foreach(var pallette in planetData.Colours.Palettes)
@@ -296,9 +332,20 @@ namespace NoMansSky.ModTemplate
 
                 }
 
+                //Randomize Tile Colours
+                for(var i=0;i<planetData.TileColours.Length;i++)
+                {
+                    var colourRandomizer = new Colour();
+                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
+                    planetData.TileColours[i] = colourRandomizer;
+                }
+
                 //Change Screen Filters
                 planetData.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.FreighterAbandoned;
-                planetData.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.Drama;
+                planetData.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.Nexus;
 
                 //Enlarge Caves
                 planetData.Terrain.MinimumCaveDepth = 100;
