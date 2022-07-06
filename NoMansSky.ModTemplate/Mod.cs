@@ -33,8 +33,8 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded.AddListener(planet => planetLoaded(planet));
-            CurrentSystem.OnSystemLoaded.AddListener(systemLoaded);
             Game.OnEnvironmentObjectLoaded.AddListener(environmentObject => envLoaded(environmentObject));
+
 
 
 
@@ -64,22 +64,7 @@ namespace NoMansSky.ModTemplate
 
             }
 
-            if(Keyboard.IsPressed(Key.RightArrow))
-            {
-                foreach (var planet in CurrentSystem.Planets)
-                {
-                    var planetData = planet.GetPlanetData();
-
-                    var seedRandomizer = new GcSeed();
-                    seedRandomizer.Seed = ((long)Random.Range(0, 18446744073709551615));
-                    planetData.GenerationData.Seed.Seed = seedRandomizer.Seed;
-                    Logger.WriteLine($"Seeds Randomized");
-                    planet.SetPlanetData(planetData);
-
-                }
-
-
-            }
+            
             
 
         
@@ -131,23 +116,7 @@ namespace NoMansSky.ModTemplate
 
         }
 
-        private void systemLoaded()
-        {
-            CurrentSystem.ModifySystemData(systemData =>
-            {
-                Logger.WriteLine($"System {systemData.Name.Value.ToString()} has been loaded");
-                Logger.WriteLine($"System Seed: {systemData.Seed.Seed.ToString()}");
-                foreach(var input in systemData.PlanetGenerationInputs)
-                {
-                    Logger.WriteLine($"{systemData.Name.Value.ToString()} generates a {input.PlanetSize.PlanetSize.ToString()} {input.Biome.Biome.ToString()} planet with a sub-biome of {input.BiomeSubType.BiomeSubType.ToString()} and a seed of {input.Seed.Seed.ToString()}");
-
-
-                }
-
-            }
-            );
-
-        }
+        
 
         //Testing Env Objects
         private void envLoaded(IEnvironmentObject environmentObject)
@@ -184,6 +153,8 @@ namespace NoMansSky.ModTemplate
             {
                 //Testing
                 Logger.WriteLine($"{planetData.GenerationData.Biome.Biome.ToString()} Planet {planetData.Name.Value} has been loaded");
+                
+                
 
                 //Testing Names
                 var nameString = new NMSString0x80();
