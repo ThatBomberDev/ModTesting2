@@ -45,6 +45,20 @@ namespace NoMansSky.ModTemplate
 
         }
 
+        public Colour colourRandomizer()
+        {
+            var newColour = new Colour();
+
+
+
+            newColour.R = Random.Range(0.000f, 1.000f);
+            newColour.G = Random.Range(0.000f, 1.000f);
+            newColour.B = Random.Range(0.000f, 1.000f);
+            newColour.A = Random.Range(0.000f, 1.000f);
+
+            return newColour;
+
+        }
 
 
         /// <summary>
@@ -59,43 +73,58 @@ namespace NoMansSky.ModTemplate
                     var planetData = planet.GetPlanetData();
                     Logger.WriteLine($"Planet {planetData.Name.Value.ToString()} has a seed {planetData.GenerationData.Seed.Seed.ToHex()}");
 
-                    
+                    var invBalance = Game.Player.DefaultInventoryBalance.GetValue();
+                    invBalance.DefaultProductMaxAmount = 2147483647;
+                    invBalance.DefaultSubstanceMaxAmount = 2147483647;
+
+                    var spaceColours = Game.SpaceColors.DefaulColorSettings.GetValue();
+                    foreach (var setting in spaceColours.Settings)
+                    {
+                        
+
+
+                        setting.BottomColour = colourRandomizer();
+                        setting.BottomColourPlanet = colourRandomizer();
+                        setting.CloudColour = colourRandomizer();
+                        setting.FogColour = colourRandomizer();
+                        setting.FogColour2 = colourRandomizer();
+                        setting.LightColour = colourRandomizer();
+                        setting.MidColour = colourRandomizer();
+                        setting.MidColourPlanet = colourRandomizer();
+                        setting.NebulaColour1 = colourRandomizer();
+                        setting.NebulaColour2 = colourRandomizer();
+                        setting.NebulaColour3 = colourRandomizer();
+                        setting.TopColour = colourRandomizer();
+                        setting.TopColourPlanet = colourRandomizer();
+
+                    }
+                    Game.SpaceColors.DefaulColorSettings.SetValue(spaceColours);
+
+                    var spaceColoursRare = Game.SpaceColors.RareColorSettings.GetValue();
+                    foreach(var setting in spaceColoursRare.Settings)
+                    {
+                        setting.BottomColour = colourRandomizer();
+                        setting.BottomColourPlanet = colourRandomizer();
+                        setting.CloudColour = colourRandomizer();
+                        setting.FogColour = colourRandomizer();
+                        setting.FogColour2 = colourRandomizer();
+                        setting.LightColour = colourRandomizer();
+                        setting.MidColour = colourRandomizer();
+                        setting.MidColourPlanet = colourRandomizer();
+                        setting.NebulaColour1 = colourRandomizer();
+                        setting.NebulaColour2 = colourRandomizer();
+                        setting.NebulaColour3 = colourRandomizer();
+                        setting.TopColour = colourRandomizer();
+                        setting.TopColourPlanet = colourRandomizer();
+
+                    }
+
+
                 }
 
             }
 
-            var spaceColours = Game.SpaceColors.DefaulColorSettings.GetValue();
-            foreach (var setting in spaceColours.Settings)
-            {
-                var colourRandomizer = new Colour();
-                colourRandomizer.R = 1.000f;
-                colourRandomizer.G = 0.000f;
-                colourRandomizer.B = 0.518f;
-                colourRandomizer.A = 1.000f;
-
-                /*
-                colourRandomizer.R = Random.Range(0.000f, 1.000f);
-                colourRandomizer.G = Random.Range(0.000f, 1.000f);
-                colourRandomizer.B = Random.Range(0.000f, 1.000f);
-                colourRandomizer.A = Random.Range(0.000f, 1.000f);
-                */
-
-                setting.BottomColour = colourRandomizer;
-                setting.BottomColourPlanet = colourRandomizer;
-                setting.CloudColour = colourRandomizer;
-                setting.FogColour = colourRandomizer;
-                setting.FogColour2 = colourRandomizer;
-                setting.LightColour = colourRandomizer;
-                setting.MidColour = colourRandomizer;
-                setting.MidColourPlanet = colourRandomizer;
-                setting.NebulaColour1 = colourRandomizer;
-                setting.NebulaColour2 = colourRandomizer;
-                setting.NebulaColour3 = colourRandomizer;
-                setting.TopColour = colourRandomizer;
-                setting.TopColourPlanet = colourRandomizer;
-                Logger.WriteLine($"Randomized Space Colours");
-            }
-            Game.SpaceColors.DefaulColorSettings.SetValue(spaceColours);
+            
             
 
         
@@ -240,12 +269,8 @@ namespace NoMansSky.ModTemplate
                 {
                     for(var i=0; i< pallette.Colours.Length; i++)
                     {
-                        var colourRandomizer = new Colour();
-                        colourRandomizer.R = Random.Range(0.000f, 1.000f);
-                        colourRandomizer.G = Random.Range(0.000f, 1.000f);
-                        colourRandomizer.B = Random.Range(0.000f, 1.000f);
-                        colourRandomizer.A = Random.Range(0.000f, 1.000f);
-                        pallette.Colours[i] = colourRandomizer;
+                        
+                        pallette.Colours[i] = colourRandomizer();
 
                         
                     }
@@ -381,38 +406,26 @@ namespace NoMansSky.ModTemplate
                 //Randomize Water HeavyAir Colours
                 foreach(var heavyAirColour in planetData.Water.HeavyAir.Colours)
                 {
-                    var colourRandomizer = new Colour();
-                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
-                    heavyAirColour.Colour1 = colourRandomizer;
-                    heavyAirColour.Colour2 = colourRandomizer;
+                    
+                    heavyAirColour.Colour1 = colourRandomizer();
+                    heavyAirColour.Colour2 = colourRandomizer();
 
                 }
 
                 //Randomize Weather HeavyAir Colours
                 foreach(var weatherHeavyAir in planetData.Weather.HeavyAir.Colours)
                 {
-                    var colourRandomizer = new Colour();
-                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
-                    weatherHeavyAir.Colour1 = colourRandomizer;
-                    weatherHeavyAir.Colour2 = colourRandomizer;
+                    
+                    weatherHeavyAir.Colour1 = colourRandomizer();
+                    weatherHeavyAir.Colour2 = colourRandomizer();
 
                 }
 
                 //Randomize Tile Colours
                 for(var i=0;i<planetData.TileColours.Length;i++)
                 {
-                    var colourRandomizer = new Colour();
-                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
-                    planetData.TileColours[i] = colourRandomizer;
+                    
+                    planetData.TileColours[i] = colourRandomizer();
                 }
 
                 //Change Screen Filters
