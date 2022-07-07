@@ -34,7 +34,7 @@ namespace NoMansSky.ModTemplate
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded.AddListener(planet => planetLoaded(planet));
             Game.OnEnvironmentObjectLoaded.AddListener(environmentObject => envLoaded(environmentObject));
-
+            Game.SpaceColors.OnColorLoaded.AddListener(spaceColours => coloursLoaded(spaceColours));
 
 
 
@@ -59,12 +59,43 @@ namespace NoMansSky.ModTemplate
                     var planetData = planet.GetPlanetData();
                     Logger.WriteLine($"Planet {planetData.Name.Value.ToString()} has a seed {planetData.GenerationData.Seed.Seed.ToHex()}");
 
-
+                    
                 }
 
             }
 
-            
+            var spaceColours = Game.SpaceColors.DefaulColorSettings.GetValue();
+            foreach (var setting in spaceColours.Settings)
+            {
+                var colourRandomizer = new Colour();
+                colourRandomizer.R = 1.000f;
+                colourRandomizer.G = 0.000f;
+                colourRandomizer.B = 0.518f;
+                colourRandomizer.A = 1.000f;
+
+                /*
+                colourRandomizer.R = Random.Range(0.000f, 1.000f);
+                colourRandomizer.G = Random.Range(0.000f, 1.000f);
+                colourRandomizer.B = Random.Range(0.000f, 1.000f);
+                colourRandomizer.A = Random.Range(0.000f, 1.000f);
+                */
+
+                setting.BottomColour = colourRandomizer;
+                setting.BottomColourPlanet = colourRandomizer;
+                setting.CloudColour = colourRandomizer;
+                setting.FogColour = colourRandomizer;
+                setting.FogColour2 = colourRandomizer;
+                setting.LightColour = colourRandomizer;
+                setting.MidColour = colourRandomizer;
+                setting.MidColourPlanet = colourRandomizer;
+                setting.NebulaColour1 = colourRandomizer;
+                setting.NebulaColour2 = colourRandomizer;
+                setting.NebulaColour3 = colourRandomizer;
+                setting.TopColour = colourRandomizer;
+                setting.TopColourPlanet = colourRandomizer;
+                Logger.WriteLine($"Randomized Space Colours");
+            }
+            Game.SpaceColors.DefaulColorSettings.SetValue(spaceColours);
             
 
         
@@ -103,8 +134,8 @@ namespace NoMansSky.ModTemplate
                 var mbinList = Game.MBinManager.GetAllMBin();
                 foreach (var file in mbinList)
                 {
-                    var fileType = Game.MBinManager.GetMBinType(file.Name);
-                    Logger.WriteLine($"Struct [{file.Name}] has an address of {file.Address}, and is of type: {fileType}");
+                    var fileType = Game.MBinManager.GetMBinType(file.MBinName);
+                    Logger.WriteLine($"Struct [{file.MBinName}] has an address of {file.Address}, and is of type: {fileType}");
                     
                     
 
@@ -116,7 +147,50 @@ namespace NoMansSky.ModTemplate
 
         }
 
-        
+        private void coloursLoaded(ISpaceColorSetting _spaceColors)
+        {
+            _spaceColors.Modify(colourData =>
+            {
+                foreach(var setting in colourData.Settings)
+                {
+                    var colourRandomizer = new Colour();
+                    colourRandomizer.R = 1.000f;
+                    colourRandomizer.G = 0.000f;
+                    colourRandomizer.B = 0.518f;
+                    colourRandomizer.A = 1.000f;
+                    
+                    /*
+                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
+                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
+                    */
+
+                    setting.BottomColour = colourRandomizer;
+                    setting.BottomColourPlanet = colourRandomizer;
+                    setting.CloudColour = colourRandomizer;
+                    setting.FogColour = colourRandomizer;
+                    setting.FogColour2 = colourRandomizer;
+                    setting.LightColour = colourRandomizer;
+                    setting.MidColour = colourRandomizer;
+                    setting.MidColourPlanet = colourRandomizer;
+                    setting.NebulaColour1 = colourRandomizer;
+                    setting.NebulaColour2 = colourRandomizer;
+                    setting.NebulaColour3 = colourRandomizer;
+                    setting.TopColour = colourRandomizer;
+                    setting.TopColourPlanet = colourRandomizer;
+                    Logger.WriteLine($"Randomized Space Colours");
+
+
+
+
+
+                }
+            });
+
+
+            
+        }
 
         //Testing Env Objects
         private void envLoaded(IEnvironmentObject environmentObject)
