@@ -35,6 +35,7 @@ namespace NoMansSky.ModTemplate
             CurrentSystem.OnPlanetLoaded.AddListener(planet => planetLoaded(planet));
             Game.OnEnvironmentObjectLoaded.AddListener(environmentObject => envLoaded(environmentObject));
             Game.SpaceColors.OnColorLoaded.AddListener(spaceColours => coloursLoaded(spaceColours));
+            //Game.CurrentSystem.OnSystemLoaded.AddListener(systemLoaded);
 
 
 
@@ -42,7 +43,19 @@ namespace NoMansSky.ModTemplate
 
 
 
+        }
 
+        private void systemLoaded()
+        {
+            var systemData = CurrentSystem.GetSystemData();
+            Logger.WriteLine($"Aquired System: {systemData.Name.Value.ToString()}");
+            systemData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Explorers;
+            systemData.ConflictData.ConflictLevel = GcPlayerConflictData.ConflictLevelEnum.Pirate;
+            
+            /*
+            CurrentSystem.SetSystemData(systemData);
+            Logger.WriteLine($"Set System");
+            */
         }
 
         public Colour colourRandomizer()
@@ -131,7 +144,9 @@ namespace NoMansSky.ModTemplate
 
             if (Keyboard.IsPressed(Key.DownArrow))
             {
-               
+                var invBalance = Game.Player.DefaultInventoryBalance.GetValue();
+                invBalance.DefaultSubstanceMaxAmount = 999999;
+                invBalance.DefaultProductMaxAmount = 9999;
 
 
                 var inventory = Player.Exosuit.GetInventory();
@@ -139,7 +154,7 @@ namespace NoMansSky.ModTemplate
                 foreach (var item in inventoryList)
                 {
                     Logger.WriteLine($"The Player has: {item.Amount} Of {item.ID}");
-
+                    systemLoaded();
 
                 }
 
@@ -180,39 +195,44 @@ namespace NoMansSky.ModTemplate
         {
             _spaceColors.Modify(colourData =>
             {
-                foreach(var setting in colourData.Settings)
+                foreach (var setting in colourData.Settings)
                 {
-                    var colourRandomizer = new Colour();
-                    colourRandomizer.R = 1.000f;
-                    colourRandomizer.G = 0.000f;
-                    colourRandomizer.B = 0.518f;
-                    colourRandomizer.A = 1.000f;
-                    
-                    /*
-                    colourRandomizer.R = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.G = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.B = Random.Range(0.000f, 1.000f);
-                    colourRandomizer.A = Random.Range(0.000f, 1.000f);
-                    */
-
-                    setting.BottomColour = colourRandomizer;
-                    setting.BottomColourPlanet = colourRandomizer;
-                    setting.CloudColour = colourRandomizer;
-                    setting.FogColour = colourRandomizer;
-                    setting.FogColour2 = colourRandomizer;
-                    setting.LightColour = colourRandomizer;
-                    setting.MidColour = colourRandomizer;
-                    setting.MidColourPlanet = colourRandomizer;
-                    setting.NebulaColour1 = colourRandomizer;
-                    setting.NebulaColour2 = colourRandomizer;
-                    setting.NebulaColour3 = colourRandomizer;
-                    setting.TopColour = colourRandomizer;
-                    setting.TopColourPlanet = colourRandomizer;
-                    Logger.WriteLine($"Randomized Space Colours");
 
 
 
+                    setting.BottomColour = colourRandomizer();
+                    setting.BottomColourPlanet = colourRandomizer();
+                    setting.CloudColour = colourRandomizer();
+                    setting.FogColour = colourRandomizer();
+                    setting.FogColour2 = colourRandomizer();
+                    setting.LightColour = colourRandomizer();
+                    setting.MidColour = colourRandomizer();
+                    setting.MidColourPlanet = colourRandomizer();
+                    setting.NebulaColour1 = colourRandomizer();
+                    setting.NebulaColour2 = colourRandomizer();
+                    setting.NebulaColour3 = colourRandomizer();
+                    setting.TopColour = colourRandomizer();
+                    setting.TopColourPlanet = colourRandomizer();
 
+                }
+                
+
+                
+                foreach (var setting in colourData.Settings)
+                {
+                    setting.BottomColour = colourRandomizer();
+                    setting.BottomColourPlanet = colourRandomizer();
+                    setting.CloudColour = colourRandomizer();
+                    setting.FogColour = colourRandomizer();
+                    setting.FogColour2 = colourRandomizer();
+                    setting.LightColour = colourRandomizer();
+                    setting.MidColour = colourRandomizer();
+                    setting.MidColourPlanet = colourRandomizer();
+                    setting.NebulaColour1 = colourRandomizer();
+                    setting.NebulaColour2 = colourRandomizer();
+                    setting.NebulaColour3 = colourRandomizer();
+                    setting.TopColour = colourRandomizer();
+                    setting.TopColourPlanet = colourRandomizer();
 
                 }
             });
@@ -228,17 +248,53 @@ namespace NoMansSky.ModTemplate
 
             environmentObject.ModifySpawnData(objData =>
                 {
-                    foreach(var creature in objData.Creatures)
+                foreach (var creature in objData.Creatures)
+                {
+                    Logger.WriteLine($"Modifying {creature.CreatureID} creature");
+                    creature.AllowFur = true;
+                    creature.CreatureMaxGroupSize = 200;
+                    creature.CreatureMinGroupSize = 100;
+                    creature.MaxScale = 500;
+                    creature.MinScale = 100;
+                    //creature.Resource.AltId = "_VERS_1 _HEADB_1 _TOPB_1 _EYESE_1 _BRHACC_7A _TREX_4 _RHIHACC_10";
+                }
+
+                foreach (var thing in objData.Objects)
                     {
-                        Logger.WriteLine($"Modifying {creature.CreatureID} creature");
-                        creature.AllowFur = true;
-                        creature.CreatureMaxGroupSize = 200;
-                        creature.CreatureMinGroupSize = 100;
-                        creature.MaxScale = 500;
-                        creature.MinScale = 100;
-                        //creature.Resource.AltId = "_VERS_1 _HEADB_1 _TOPB_1 _EYESE_1 _BRHACC_7A _TREX_4 _RHIHACC_10";
+                        thing.MinAngle = thing.MinAngle + Random.Range(0,3);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+
+                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+
+
+                        thing.MaxXZRotation = thing.MaxXZRotation + Random.Range(0, 5);
                     }
-                    
+                foreach (var thing in objData.DetailObjects)
+                    {
+                        thing.MinAngle = thing.MinAngle + Random.Range(0, 3);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+
+                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+                    }
+                foreach(var thing in objData.DistantObjects)
+                    {
+                        thing.MinAngle = thing.MinAngle + Random.Range(0, 3);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+
+                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+                    }
+                foreach(var thing in objData.Landmarks)
+                    {
+                        thing.MinAngle = thing.MinAngle + Random.Range(0, 3);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+
+                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+                    }
+
 
                  
 
