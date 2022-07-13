@@ -34,14 +34,140 @@ namespace NoMansSky.ModTemplate
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded.AddListener(planet => planetLoaded(planet));
             Game.OnEnvironmentObjectLoaded.AddListener(environmentObject => envLoaded(environmentObject));
-            Game.SpaceColors.OnColorLoaded.AddListener(spaceColours => coloursLoaded(spaceColours));
+            Game.Colors.DaySkyColors.OnLoaded.AddListener(dayColours);
+            Game.Colors.DuskSkyColors.OnLoaded.AddListener(duskColours);
+            Game.Colors.NightSkyColors.OnLoaded.AddListener(nightColours);
             //Game.CurrentSystem.OnSystemLoaded.AddListener(systemLoaded);
+            Game.Colors.SpaceSkyColors.OnLoaded.AddListener(spaceNebulas);
+
+            Game.Colors.WaterColors.OnLoaded.AddListener(waterColours);
+            
 
 
 
 
+        }
+
+        private void nightColours()
+        {
+            Game.Colors.NightSkyColors.Modify(nightSkyColours =>
+            {
+                foreach (var setting in nightSkyColours.Settings)
+                {
+                    setting.CloudColour1 = colourRandomizer();
+                    setting.CloudColour2 = colourRandomizer();
+                    setting.FogColour = colourRandomizer();
+                    setting.HeightFogColour = colourRandomizer();
+                    setting.HorizonColour = colourRandomizer();
+                    setting.LightColour = colourRandomizer();
+                    setting.SkyColour = colourRandomizer();
+                    setting.SkySolarColour = colourRandomizer();
+                    setting.SkyUpperColour = colourRandomizer();
+                    setting.SunColour = colourRandomizer();
+                }
+            });
+        }
+
+        private void duskColours()
+        {
+            Game.Colors.DuskSkyColors.Modify(duskSkyColours =>
+            {
+                foreach (var setting in duskSkyColours.Settings)
+                {
+                    setting.CloudColour1 = colourRandomizer();
+                    setting.CloudColour2 = colourRandomizer();
+                    setting.FogColour = colourRandomizer();
+                    setting.HeightFogColour = colourRandomizer();
+                    setting.HorizonColour = colourRandomizer();
+                    setting.LightColour = colourRandomizer();
+                    setting.SkyColour = colourRandomizer();
+                    setting.SkySolarColour = colourRandomizer();
+                    setting.SkyUpperColour = colourRandomizer();
+                    setting.SunColour = colourRandomizer();
+                }
+            });
+        }
+
+        private void dayColours()
+        {
+            Game.Colors.DaySkyColors.Modify(daySkyColours =>
+            {
+                foreach(var setting in daySkyColours.Settings)
+                {
+                    setting.CloudColour1 = colourRandomizer();
+                    setting.CloudColour2 = colourRandomizer();
+                    setting.FogColour = colourRandomizer();
+                    setting.HeightFogColour = colourRandomizer();
+                    setting.HorizonColour = colourRandomizer();
+                    setting.LightColour = colourRandomizer();
+                    setting.SkyColour = colourRandomizer();
+                    setting.SkySolarColour = colourRandomizer();
+                    setting.SkyUpperColour = colourRandomizer();
+                    setting.SunColour = colourRandomizer();
+                }
+            });
+        }
+
+        private void waterColours()
+        {
+            Game.Colors.WaterColors.Modify(waterColours =>
+            {
+                foreach(var setting in waterColours.Settings)
+                {
+                    setting.FoamColour = colourRandomizer();
+                    setting.WaterColourAdd = colourRandomizer();
+                    setting.WaterColourBase = colourRandomizer();
+                    setting.WaterFogColourFar = colourRandomizer();
+                    setting.WaterFogColourNear = colourRandomizer();
+
+                }
+
+            });
+        }
+
+        private void spaceNebulas()
+        {
+            Game.Colors.SpaceSkyColors.Modify(spaceColours =>
+            {
+                foreach(var setting in spaceColours.Settings)
+                {
+                    setting.BottomColour = colourRandomizer();
+                    setting.BottomColourPlanet = colourRandomizer();
+                    setting.CloudColour = colourRandomizer();
+                    setting.FogColour = colourRandomizer();
+                    setting.FogColour2 = colourRandomizer();
+                    setting.LightColour = colourRandomizer();
+                    setting.MidColour = colourRandomizer();
+                    setting.MidColourPlanet = colourRandomizer();
+                    setting.NebulaColour1 = colourRandomizer();
+                    setting.NebulaColour2 = colourRandomizer();
+                    setting.NebulaColour3 = colourRandomizer();
+                    setting.TopColour = colourRandomizer();
+                    setting.TopColourPlanet = colourRandomizer();
+                }
 
 
+            });
+
+            Game.Colors.RareSpaceSkyColors.Modify(spaceColours =>
+            {
+                foreach (var setting in spaceColours.Settings)
+                {
+                    setting.BottomColour = colourRandomizer();
+                    setting.BottomColourPlanet = colourRandomizer();
+                    setting.CloudColour = colourRandomizer();
+                    setting.FogColour = colourRandomizer();
+                    setting.FogColour2 = colourRandomizer();
+                    setting.LightColour = colourRandomizer();
+                    setting.MidColour = colourRandomizer();
+                    setting.MidColourPlanet = colourRandomizer();
+                    setting.NebulaColour1 = colourRandomizer();
+                    setting.NebulaColour2 = colourRandomizer();
+                    setting.NebulaColour3 = colourRandomizer();
+                    setting.TopColour = colourRandomizer();
+                    setting.TopColourPlanet = colourRandomizer();
+                }
+            });
 
         }
 
@@ -49,13 +175,14 @@ namespace NoMansSky.ModTemplate
         {
             var systemData = CurrentSystem.GetSystemData();
             Logger.WriteLine($"Aquired System: {systemData.Name.Value.ToString()}");
+            Logger.WriteLine($"System Race: {systemData.InhabitingRace.AlienRace.ToString()}");
             systemData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Explorers;
             systemData.ConflictData.ConflictLevel = GcPlayerConflictData.ConflictLevelEnum.Pirate;
             
-            /*
+            
             CurrentSystem.SetSystemData(systemData);
             Logger.WriteLine($"Set System");
-            */
+            
         }
 
         public Colour colourRandomizer()
@@ -90,54 +217,38 @@ namespace NoMansSky.ModTemplate
                     invBalance.DefaultProductMaxAmount = 2147483647;
                     invBalance.DefaultSubstanceMaxAmount = 2147483647;
 
-                    var spaceColours = Game.SpaceColors.DefaulColorSettings.GetValue();
-                    foreach (var setting in spaceColours.Settings)
-                    {
-                        
+                    spaceNebulas();
+                    dayColours();
+                    duskColours();
+                    nightColours();
+                    waterColours();
 
-
-                        setting.BottomColour = colourRandomizer();
-                        setting.BottomColourPlanet = colourRandomizer();
-                        setting.CloudColour = colourRandomizer();
-                        setting.FogColour = colourRandomizer();
-                        setting.FogColour2 = colourRandomizer();
-                        setting.LightColour = colourRandomizer();
-                        setting.MidColour = colourRandomizer();
-                        setting.MidColourPlanet = colourRandomizer();
-                        setting.NebulaColour1 = colourRandomizer();
-                        setting.NebulaColour2 = colourRandomizer();
-                        setting.NebulaColour3 = colourRandomizer();
-                        setting.TopColour = colourRandomizer();
-                        setting.TopColourPlanet = colourRandomizer();
-
-                    }
-                    Game.SpaceColors.DefaulColorSettings.SetValue(spaceColours);
-
-                    var spaceColoursRare = Game.SpaceColors.RareColorSettings.GetValue();
-                    foreach(var setting in spaceColoursRare.Settings)
-                    {
-                        setting.BottomColour = colourRandomizer();
-                        setting.BottomColourPlanet = colourRandomizer();
-                        setting.CloudColour = colourRandomizer();
-                        setting.FogColour = colourRandomizer();
-                        setting.FogColour2 = colourRandomizer();
-                        setting.LightColour = colourRandomizer();
-                        setting.MidColour = colourRandomizer();
-                        setting.MidColourPlanet = colourRandomizer();
-                        setting.NebulaColour1 = colourRandomizer();
-                        setting.NebulaColour2 = colourRandomizer();
-                        setting.NebulaColour3 = colourRandomizer();
-                        setting.TopColour = colourRandomizer();
-                        setting.TopColourPlanet = colourRandomizer();
-
-                    }
 
 
                 }
+                    
 
             }
 
-            
+            if(Keyboard.IsHeld(Key.Control))
+            {
+                if(Keyboard.IsPressed(Key.UpArrow))
+                {
+                    Logger.WriteLine($"Testing Combination Hotkeys...");
+
+                    var playerInv = Game.Player.Exosuit.GetInventory();
+                    var invList = playerInv.GetItems();
+                    foreach(var item in invList)
+                    {
+                        if (item.ID == "FUEL1")
+                        {
+                            item.Amount = 9999;
+                        }
+
+                    }
+
+                }
+            }
             
 
         
@@ -155,6 +266,8 @@ namespace NoMansSky.ModTemplate
                 {
                     Logger.WriteLine($"The Player has: {item.Amount} Of {item.ID}");
                     systemLoaded();
+
+                    
 
                 }
 
@@ -178,8 +291,8 @@ namespace NoMansSky.ModTemplate
                 var mbinList = Game.MBinManager.GetAllMBin();
                 foreach (var file in mbinList)
                 {
-                    var fileType = Game.MBinManager.GetMBinType(file.MBinName);
-                    Logger.WriteLine($"Struct [{file.MBinName}] has an address of {file.Address}, and is of type: {fileType}");
+                    var fileType = Game.MBinManager.GetMBinType(file.FullName);
+                    Logger.WriteLine($"Struct [{file.FullName}] has an address of {file.Address}, and is of type: {fileType}");
                     
                     
 
@@ -191,55 +304,31 @@ namespace NoMansSky.ModTemplate
 
         }
 
-        private void coloursLoaded(ISpaceColorSetting _spaceColors)
+        private void coloursLoaded(IColorsFile colourFile)
         {
-            _spaceColors.Modify(colourData =>
+            colourFile.Modify<GcWeatherColourSettings>(allColours =>
+
             {
-                foreach (var setting in colourData.Settings)
+                foreach(var genericSetting in allColours.GenericSettings.Settings)
                 {
-
-
-
-                    setting.BottomColour = colourRandomizer();
-                    setting.BottomColourPlanet = colourRandomizer();
-                    setting.CloudColour = colourRandomizer();
-                    setting.FogColour = colourRandomizer();
-                    setting.FogColour2 = colourRandomizer();
-                    setting.LightColour = colourRandomizer();
-                    setting.MidColour = colourRandomizer();
-                    setting.MidColourPlanet = colourRandomizer();
-                    setting.NebulaColour1 = colourRandomizer();
-                    setting.NebulaColour2 = colourRandomizer();
-                    setting.NebulaColour3 = colourRandomizer();
-                    setting.TopColour = colourRandomizer();
-                    setting.TopColourPlanet = colourRandomizer();
-
-                }
-                
-
-                
-                foreach (var setting in colourData.Settings)
-                {
-                    setting.BottomColour = colourRandomizer();
-                    setting.BottomColourPlanet = colourRandomizer();
-                    setting.CloudColour = colourRandomizer();
-                    setting.FogColour = colourRandomizer();
-                    setting.FogColour2 = colourRandomizer();
-                    setting.LightColour = colourRandomizer();
-                    setting.MidColour = colourRandomizer();
-                    setting.MidColourPlanet = colourRandomizer();
-                    setting.NebulaColour1 = colourRandomizer();
-                    setting.NebulaColour2 = colourRandomizer();
-                    setting.NebulaColour3 = colourRandomizer();
-                    setting.TopColour = colourRandomizer();
-                    setting.TopColourPlanet = colourRandomizer();
-
+                    genericSetting.CloudColour1 = colourRandomizer();
+                    genericSetting.CloudColour2 = colourRandomizer();
+                    genericSetting.FogColour = colourRandomizer();
+                    genericSetting.HeightFogColour = colourRandomizer();
+                    genericSetting.HorizonColour = colourRandomizer();
+                    genericSetting.LightColour = colourRandomizer();
+                    genericSetting.SkyColour = colourRandomizer();
+                    genericSetting.SkySolarColour = colourRandomizer();
+                    genericSetting.SkyUpperColour = colourRandomizer();
+                    genericSetting.SunColour = colourRandomizer();
                 }
             });
 
 
             
         }
+
+        
 
         //Testing Env Objects
         private void envLoaded(IEnvironmentObject environmentObject)
@@ -252,47 +341,47 @@ namespace NoMansSky.ModTemplate
                 {
                     Logger.WriteLine($"Modifying {creature.CreatureID} creature");
                     creature.AllowFur = true;
-                    creature.CreatureMaxGroupSize = 200;
-                    creature.CreatureMinGroupSize = 100;
-                    creature.MaxScale = 500;
-                    creature.MinScale = 100;
+                    creature.CreatureMaxGroupSize = creature.CreatureMaxGroupSize + 50;
+                    creature.CreatureMinGroupSize = creature.CreatureMinGroupSize + 100;
+                    creature.MaxScale = creature.MaxScale + 10;
+                    creature.MinScale = creature.MinScale + 10;
                     //creature.Resource.AltId = "_VERS_1 _HEADB_1 _TOPB_1 _EYESE_1 _BRHACC_7A _TREX_4 _RHIHACC_10";
                 }
 
                 foreach (var thing in objData.Objects)
                     {
-                        thing.MinAngle = thing.MinAngle + Random.Range(0,3);
-                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+                        thing.MinAngle = thing.MinAngle + Random.Range(0,2);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 2);
 
-                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
-                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+                        thing.MinScale = thing.MinScale + Random.Range(0, 2);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 2);
 
 
                         thing.MaxXZRotation = thing.MaxXZRotation + Random.Range(0, 5);
                     }
                 foreach (var thing in objData.DetailObjects)
                     {
-                        thing.MinAngle = thing.MinAngle + Random.Range(0, 3);
-                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+                        thing.MinAngle = thing.MinAngle + Random.Range(0, 2);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 2);
 
-                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
-                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+                        thing.MinScale = thing.MinScale + Random.Range(0, 2);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 2);
                     }
                 foreach(var thing in objData.DistantObjects)
                     {
-                        thing.MinAngle = thing.MinAngle + Random.Range(0, 3);
-                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+                        thing.MinAngle = thing.MinAngle + Random.Range(0, 2);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 2);
 
-                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
-                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+                        thing.MinScale = thing.MinScale + Random.Range(0, 2);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 2);
                     }
                 foreach(var thing in objData.Landmarks)
                     {
-                        thing.MinAngle = thing.MinAngle + Random.Range(0, 3);
-                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 3);
+                        thing.MinAngle = thing.MinAngle + Random.Range(0, 2);
+                        thing.MaxAngle = thing.MaxAngle + Random.Range(0, 2);
 
-                        thing.MinScale = thing.MinScale + Random.Range(0, 3);
-                        thing.MaxScale = thing.MaxScale + Random.Range(0, 3);
+                        thing.MinScale = thing.MinScale + Random.Range(0, 2);
+                        thing.MaxScale = thing.MaxScale + Random.Range(0, 2);
                     }
 
 
@@ -507,7 +596,7 @@ namespace NoMansSky.ModTemplate
             Logger.WriteLine($"The Amount Of Missions Loaded Is: {missionTableInMem.Missions.Count}");
             for(var i=0; i< missionTableInMem.Missions.Count; i++)
             {
-                Logger.WriteLine($"Loaded Mission: {missionTableInMem.Missions[i].MissionID}");
+                Logger.WriteLine($"Loaded Mission: {missionTableInMem.Missions[i].MissionID.ToString()}");
 
 
             }
