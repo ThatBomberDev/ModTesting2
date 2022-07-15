@@ -17,7 +17,7 @@ namespace NoMansSky.ModTemplate
     public class Mod : NMSMod
     {
 
-        
+
         /// <summary>
         /// Initializes your mod along with some necessary info.
         /// </summary>
@@ -41,11 +41,45 @@ namespace NoMansSky.ModTemplate
             Game.Colors.SpaceSkyColors.OnLoaded.AddListener(spaceNebulas);
 
             Game.Colors.WaterColors.OnLoaded.AddListener(waterColours);
-            
+
+            Game.Reality.Products_NMS.OnLoaded.AddListener(createItems);
+            Game.Reality.FrigateFlybyTable.OnLoaded.AddListener(setFlybys);
 
 
 
 
+        }
+
+        private void checkForItem()
+        {
+            var inventory = Game.Player.Exosuit.GetInventory();
+            foreach(var item in inventory.GetItems())
+            {
+                if (item.ID == "ASTEROID1")
+                {
+                    Logger.WriteLine($"Found the requested item: {item.ID}");
+
+                }
+                else 
+                { 
+                    Logger.WriteLine($"Item not found, skipping"); 
+                }
+            }
+        }
+
+        private void setFlybys()
+        {
+            var flybyTable = Game.Reality.FrigateFlybyTable.GetValue();
+            foreach(var entry in flybyTable.Entries)
+            {
+                entry.FlybyType.FrigateFlybyType = GcFrigateFlybyType.FrigateFlybyTypeEnum.AmbientGroup;
+                foreach(var frigate in entry.Frigates)
+                {
+                    frigate.FrigateClass.FrigateClass = Random.GetEnum<GcFrigateClass.FrigateClassEnum>();
+                    frigate.MaxCount = Random.Range(10, 20);
+                    frigate.MinCount = Random.Range(1, 10);
+                }
+            }
         }
 
         private void nightColours()
@@ -92,7 +126,7 @@ namespace NoMansSky.ModTemplate
         {
             Game.Colors.DaySkyColors.Modify(daySkyColours =>
             {
-                foreach(var setting in daySkyColours.Settings)
+                foreach (var setting in daySkyColours.Settings)
                 {
                     setting.CloudColour1 = colourRandomizer();
                     setting.CloudColour2 = colourRandomizer();
@@ -112,7 +146,7 @@ namespace NoMansSky.ModTemplate
         {
             Game.Colors.WaterColors.Modify(waterColours =>
             {
-                foreach(var setting in waterColours.Settings)
+                foreach (var setting in waterColours.Settings)
                 {
                     setting.FoamColour = colourRandomizer();
                     setting.WaterColourAdd = colourRandomizer();
@@ -129,7 +163,7 @@ namespace NoMansSky.ModTemplate
         {
             Game.Colors.SpaceSkyColors.Modify(spaceColours =>
             {
-                foreach(var setting in spaceColours.Settings)
+                foreach (var setting in spaceColours.Settings)
                 {
                     setting.BottomColour = colourRandomizer();
                     setting.BottomColourPlanet = colourRandomizer();
@@ -176,13 +210,12 @@ namespace NoMansSky.ModTemplate
             var systemData = CurrentSystem.GetSystemData();
             Logger.WriteLine($"Aquired System: {systemData.Name.Value.ToString()}");
             Logger.WriteLine($"System Race: {systemData.InhabitingRace.AlienRace.ToString()}");
-            systemData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Explorers;
-            systemData.ConflictData.ConflictLevel = GcPlayerConflictData.ConflictLevelEnum.Pirate;
+            Logger.WriteLine($"Maximum System Freighters: {systemData.MaxNumFreighters}");
             
-            
+            /*
             CurrentSystem.SetSystemData(systemData);
             Logger.WriteLine($"Set System");
-            
+            */
         }
 
         public Colour colourRandomizer()
@@ -194,7 +227,7 @@ namespace NoMansSky.ModTemplate
             newColour.R = Random.Range(0.000f, 1.000f);
             newColour.G = Random.Range(0.000f, 1.000f);
             newColour.B = Random.Range(0.000f, 1.000f);
-            newColour.A = Random.Range(0.000f, 1.000f);
+            newColour.A = Random.Range(0.500f, 1.000f);
 
             return newColour;
 
@@ -206,39 +239,55 @@ namespace NoMansSky.ModTemplate
         /// </summary>
         public override void Update()
         {
-            if(Keyboard.IsPressed(Key.UpArrow))
+            if (Keyboard.IsPressed(Key.UpArrow))
             {
-                foreach(var planet in CurrentSystem.Planets)
-                {
-                    var planetData = planet.GetPlanetData();
-                    Logger.WriteLine($"Planet {planetData.Name.Value.ToString()} has a seed {planetData.GenerationData.Seed.Seed.ToHex()}");
+                spaceNebulas();
+                dayColours();
+                duskColours();
+                nightColours();
+                waterColours();
 
-                    var invBalance = Game.Player.DefaultInventoryBalance.GetValue();
-                    invBalance.DefaultProductMaxAmount = 2147483647;
-                    invBalance.DefaultSubstanceMaxAmount = 2147483647;
-
-                    spaceNebulas();
-                    dayColours();
-                    duskColours();
-                    nightColours();
-                    waterColours();
+                checkForItem();
 
 
 
-                }
+                var tableTest = Game.Reality.Rewards.GetValue();
+                    foreach (var reward in tableTest.InteractionTable)
+                    {
+                        Logger.WriteLine($"Interaction Table Reward: {reward.Id.Value.ToString()}");
+                    }
+
+                    CurrentSystem.ForEachPlanet(planet =>
+                    {
+                        
+
+                        planet.ModifyPlanetDataAsync(planetData =>
+                        {
+                            Logger.WriteLine($"Planet {planetData.Name.Value.ToString()} has a seed {planetData.GenerationData.Seed.Seed.ToHex()}");
+                            planetData.Weather.ScreenFilter.ScreenFilter = Random.GetEnum<GcScreenFilters.ScreenFilterEnum>();
+                            planetData.Weather.StormScreenFilter.ScreenFilter = Random.GetEnum<GcScreenFilters.ScreenFilterEnum>();
+
+                            
+                        });
                     
+                    
+                    });
+
+                    
+                
+
 
             }
 
-            if(Keyboard.IsHeld(Key.Control))
+            if (Keyboard.IsHeld(Key.Control))
             {
-                if(Keyboard.IsPressed(Key.UpArrow))
+                if (Keyboard.IsPressed(Key.UpArrow))
                 {
                     Logger.WriteLine($"Testing Combination Hotkeys...");
 
                     var playerInv = Game.Player.Exosuit.GetInventory();
                     var invList = playerInv.GetItems();
-                    foreach(var item in invList)
+                    foreach (var item in invList)
                     {
                         if (item.ID == "FUEL1")
                         {
@@ -249,9 +298,9 @@ namespace NoMansSky.ModTemplate
 
                 }
             }
-            
 
-        
+
+
 
             if (Keyboard.IsPressed(Key.DownArrow))
             {
@@ -265,14 +314,14 @@ namespace NoMansSky.ModTemplate
                 foreach (var item in inventoryList)
                 {
                     Logger.WriteLine($"The Player has: {item.Amount} Of {item.ID}");
-                    systemLoaded();
 
-                    
+
+
 
                 }
+                systemLoaded();
 
 
-                
 
 
 
@@ -286,15 +335,15 @@ namespace NoMansSky.ModTemplate
 
             if (Keyboard.IsPressed(Key.LeftArrow))
             {
-                
+
 
                 var mbinList = Game.MBinManager.GetAllMBin();
                 foreach (var file in mbinList)
                 {
                     var fileType = Game.MBinManager.GetMBinType(file.FullName);
                     Logger.WriteLine($"Struct [{file.FullName}] has an address of {file.Address}, and is of type: {fileType}");
-                    
-                    
+
+
 
                 }
                 structTest();
@@ -303,6 +352,30 @@ namespace NoMansSky.ModTemplate
 
 
         }
+
+        private void createItems()
+        {
+            var itemTable = Game.Reality.Products_NMS.GetValue();
+            var clonableEntry = itemTable.Table[1];
+
+            clonableEntry.Name.Value = "FREIGHTER PASS";
+            clonableEntry.NameLower.Value = "Freighter Pass";
+            clonableEntry.Description.Value = "A specialist pass required to board stationary freighters. Failure to present a valid pass may result in termination by sentinel forces.";
+            clonableEntry.Id.Value = "FREIGHTER_PASS";
+
+            itemTable.Table.Add(clonableEntry);
+            Game.Reality.Products_NMS.SetValue(itemTable);
+            
+            var specialTable = Game.Reality.PurchaseableSpecials.GetValue();
+            var clonableSpecialEntry = specialTable.Table[1];
+            clonableSpecialEntry.ID.Value = "FREIGHTER_PASS";
+            clonableSpecialEntry.IsConsumable = true;
+            clonableSpecialEntry.MissionTier = 1;
+            clonableSpecialEntry.ShopNumber = 1;
+            Game.Reality.PurchaseableSpecials.SetValue(specialTable);
+
+        }
+
 
         private void coloursLoaded(IColorsFile colourFile)
         {
@@ -401,13 +474,12 @@ namespace NoMansSky.ModTemplate
             {
                 //Testing
                 Logger.WriteLine($"{planetData.GenerationData.Biome.Biome.ToString()} Planet {planetData.Name.Value} has been loaded");
-                
-                
+
+
 
                 //Testing Names
-                var nameString = new NMSString0x80();
-                nameString = "Testing Name";
-                planetData.Name = nameString;
+                var initialName = planetData.Name.Value;
+                planetData.Name.Value = ($"Corrupted Planet: {initialName}");
 
                 //Randomize Colours
                 foreach(var pallette in planetData.Colours.Palettes)
@@ -452,101 +524,27 @@ namespace NoMansSky.ModTemplate
                 }
 
                 //Randomize Resource Chance
-                var resourceChance  = Random.Range(0, 1);
-                if(resourceChance == 0)
-                {
-                    planetData.ResourceLevel = GcPlanetData.ResourceLevelEnum.Low;
-                }
-                else if (resourceChance == 1)
-                {
-                    planetData.ResourceLevel = GcPlanetData.ResourceLevelEnum.High;
-                }
+                planetData.ResourceLevel = Random.GetEnum<GcPlanetData.ResourceLevelEnum>();
+
 
                 //Randomize Life (Flora) Chance
-                var lifeChance = Random.Range(0, 3);
-                if(lifeChance == 0)
-                {
-                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
-                }
-                else if (lifeChance == 1)
-                {
-                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Low;
-                }
-                else if (lifeChance == 2)
-                {
-                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Mid;
-                }
-                else if (lifeChance == 2)
-                {
-                    planetData.Life.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
-                }
+                planetData.Life.LifeSetting = Random.GetEnum <GcPlanetLife.LifeSettingEnum>();
+
 
                 //Randomize Creature(Fauna) Chance
-                var creatureChance = Random.Range(0, 3);
-                if (creatureChance == 0)
-                {
-                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Dead;
-                }
-                else if (creatureChance == 1)
-                {
-                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Low;
-                }
-                else if (creatureChance == 2)
-                {
-                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Mid;
-                }
-                else if (creatureChance == 2)
-                {
-                    planetData.CreatureLife.LifeSetting = GcPlanetLife.LifeSettingEnum.Full;
-                }
+                planetData.CreatureLife.LifeSetting = Random.GetEnum<GcPlanetLife.LifeSettingEnum>();
 
                 //Activate All Terrain Features
-                foreach(var feature in planetData.Terrain.Features)
+                foreach (var feature in planetData.Terrain.Features)
                 {
                     feature.Active = true;
                 }
 
                 //Randomize Building Density
-                var buildingChance = Random.Range(0, 5);
-                if (buildingChance == 0)
-                {
-                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Dead;
-                }
-                else if (buildingChance == 1)
-                {
-                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Low;
-                }
-                else if (buildingChance == 2)
-                {
-                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Mid;
-                }
-                else if (buildingChance == 3)
-                {
-                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Full;
-                }
-                else if (buildingChance == 4)
-                {
-                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.Weird;
-                }
-                else if (buildingChance == 4)
-                {
-                    planetData.BuildingLevel.BuildingDensity = GcBuildingDensityLevels.BuildingDensityEnum.HalfWeird;
-                }
+                planetData.BuildingLevel.BuildingDensity = Random.GetEnum<GcBuildingDensityLevels.BuildingDensityEnum>();
 
                 //Randomize Alien Race Chance
-                var alienChance = Random.Range(0, 2);
-                if(alienChance == 0)
-                {
-                    planetData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Traders;
-                }
-                else if (alienChance == 1)
-                {
-                    planetData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Warriors;
-                }
-                else if (alienChance == 2)
-                {
-                    planetData.InhabitingRace.AlienRace = GcAlienRace.AlienRaceEnum.Explorers;
-                }
+                planetData.InhabitingRace.AlienRace = Random.GetEnum<GcAlienRace.AlienRaceEnum>();
 
                 //Randomize Water HeavyAir Colours
                 foreach(var heavyAirColour in planetData.Water.HeavyAir.Colours)
@@ -573,9 +571,15 @@ namespace NoMansSky.ModTemplate
                     planetData.TileColours[i] = colourRandomizer();
                 }
 
+               
+
+                //Ring Colours
+                planetData.Rings.Colour1 = colourRandomizer();
+                planetData.Rings.Colour2 = colourRandomizer();
+
                 //Change Screen Filters
-                planetData.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.FreighterAbandoned;
-                planetData.Weather.StormScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.Nexus;
+                planetData.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.Default;
+                planetData.Weather.StormScreenFilter.ScreenFilter = Random.GetEnum<GcScreenFilters.ScreenFilterEnum>();
 
                 //Enlarge Caves
                 planetData.Terrain.MinimumCaveDepth = 100;
@@ -596,7 +600,7 @@ namespace NoMansSky.ModTemplate
             Logger.WriteLine($"The Amount Of Missions Loaded Is: {missionTableInMem.Missions.Count}");
             for(var i=0; i< missionTableInMem.Missions.Count; i++)
             {
-                Logger.WriteLine($"Loaded Mission: {missionTableInMem.Missions[i].MissionID.ToString()}");
+                Logger.WriteLine($"Loaded Mission: {missionTableInMem.Missions[i].MissionID.Value.ToString()}");
 
 
             }
