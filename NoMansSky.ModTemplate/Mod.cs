@@ -33,6 +33,7 @@ namespace NoMansSky.ModTemplate
             Game.OnMainMenu += OnMainMenu;
             Game.OnGameJoined.AddListener(GameJoined);
             CurrentSystem.OnPlanetLoaded.AddListener(planet => planetLoaded(planet));
+            
             Game.OnEnvironmentObjectLoaded.AddListener(environmentObject => envLoaded(environmentObject));
             Game.Colors.DaySkyColors.OnLoaded.AddListener(dayColours);
             Game.Colors.DuskSkyColors.OnLoaded.AddListener(duskColours);
@@ -44,10 +45,32 @@ namespace NoMansSky.ModTemplate
 
             Game.Reality.Products_NMS.OnLoaded.AddListener(createItems);
             Game.Reality.FrigateFlybyTable.OnLoaded.AddListener(setFlybys);
+            Game.Reality.PurchaseableSpecials.OnLoaded.AddListener(setSpecials);
 
 
 
 
+        }
+
+        private void randomizeGalaxyMapColours()
+        {
+            var galaxyGlobal = Game.Globals.GalaxyGlobals.GetValue<GcGalaxyGlobals>();
+            for(var i = 0; i< galaxyGlobal.DefaultRenderSetup.MapLargeAreaPrimaryDefaultColours.Length; i++)
+            {
+                galaxyGlobal.DefaultRenderSetup.MapLargeAreaPrimaryDefaultColours[i] = colourRandomizer();
+            }
+
+        }
+
+        private void setSpecials()
+        {
+            var specialTable = Game.Reality.PurchaseableSpecials.GetValue();
+            var clonableSpecialEntry = specialTable.Table[1];
+            clonableSpecialEntry.ID.Value = "FREIGHTER_PASS";
+            clonableSpecialEntry.IsConsumable = true;
+            clonableSpecialEntry.MissionTier = 1;
+            clonableSpecialEntry.ShopNumber = 1;
+            Game.Reality.PurchaseableSpecials.SetValue(specialTable);
         }
 
         private void checkForItem()
@@ -84,7 +107,7 @@ namespace NoMansSky.ModTemplate
 
         private void nightColours()
         {
-            Game.Colors.NightSkyColors.Modify(nightSkyColours =>
+            Game.Colors.NightSkyColors.ModifyAsync(nightSkyColours =>
             {
                 foreach (var setting in nightSkyColours.Settings)
                 {
@@ -104,7 +127,7 @@ namespace NoMansSky.ModTemplate
 
         private void duskColours()
         {
-            Game.Colors.DuskSkyColors.Modify(duskSkyColours =>
+            Game.Colors.DuskSkyColors.ModifyAsync(duskSkyColours =>
             {
                 foreach (var setting in duskSkyColours.Settings)
                 {
@@ -124,7 +147,7 @@ namespace NoMansSky.ModTemplate
 
         private void dayColours()
         {
-            Game.Colors.DaySkyColors.Modify(daySkyColours =>
+            Game.Colors.DaySkyColors.ModifyAsync(daySkyColours =>
             {
                 foreach (var setting in daySkyColours.Settings)
                 {
@@ -144,7 +167,7 @@ namespace NoMansSky.ModTemplate
 
         private void waterColours()
         {
-            Game.Colors.WaterColors.Modify(waterColours =>
+            Game.Colors.WaterColors.ModifyAsync(waterColours =>
             {
                 foreach (var setting in waterColours.Settings)
                 {
@@ -161,7 +184,7 @@ namespace NoMansSky.ModTemplate
 
         private void spaceNebulas()
         {
-            Game.Colors.SpaceSkyColors.Modify(spaceColours =>
+            Game.Colors.SpaceSkyColors.ModifyAsync(spaceColours =>
             {
                 foreach (var setting in spaceColours.Settings)
                 {
@@ -183,7 +206,7 @@ namespace NoMansSky.ModTemplate
 
             });
 
-            Game.Colors.RareSpaceSkyColors.Modify(spaceColours =>
+            Game.Colors.RareSpaceSkyColors.ModifyAsync(spaceColours =>
             {
                 foreach (var setting in spaceColours.Settings)
                 {
@@ -247,15 +270,14 @@ namespace NoMansSky.ModTemplate
                 nightColours();
                 waterColours();
 
-                checkForItem();
+                
+                randomizeGalaxyMapColours();
 
-
-
-                var tableTest = Game.Reality.Rewards.GetValue();
-                    foreach (var reward in tableTest.InteractionTable)
-                    {
-                        Logger.WriteLine($"Interaction Table Reward: {reward.Id.Value.ToString()}");
-                    }
+                Game.CurrentSystem.ModifySystemDataAsync(systemData =>
+                {
+                    systemData.ConflictData.ConflictLevel = Random.GetEnum<GcPlayerConflictData.ConflictLevelEnum>();
+                    Logger.WriteLine($"Current Conflict Level: {systemData.ConflictData.ConflictLevel}");
+                });
 
                     CurrentSystem.ForEachPlanet(planet =>
                     {
@@ -264,10 +286,16 @@ namespace NoMansSky.ModTemplate
                         planet.ModifyPlanetDataAsync(planetData =>
                         {
                             Logger.WriteLine($"Planet {planetData.Name.Value.ToString()} has a seed {planetData.GenerationData.Seed.Seed.ToHex()}");
-                            planetData.Weather.ScreenFilter.ScreenFilter = Random.GetEnum<GcScreenFilters.ScreenFilterEnum>();
-                            planetData.Weather.StormScreenFilter.ScreenFilter = Random.GetEnum<GcScreenFilters.ScreenFilterEnum>();
-
                             
+                            planetData.Life.LifeSetting = Random.GetEnum<GcPlanetLife.LifeSettingEnum>();
+                            planetData.CreatureLife.LifeSetting = Random.GetEnum<GcPlanetLife.LifeSettingEnum>();
+                            planetData.SentinelData.SentinelLevel = Random.GetEnum<GcPlanetSentinelData.SentinelLevelEnum>();
+
+                            planetData.Weather.AtmosphereType = Random.GetEnum<GcPlanetWeatherData.AtmosphereTypeEnum>();
+                            planetData.GenerationData.Seed.Seed = Random.Range(0, 9223372036854775807);
+                            planetData.Terrain.SeaLevel = Random.Range(0, 900);
+                            Logger.WriteLine($"Async Modified {planetData.Name.Value.ToString()}");
+
                         });
                     
                     
@@ -319,18 +347,22 @@ namespace NoMansSky.ModTemplate
 
 
                 }
-                systemLoaded();
 
 
+                var tableTest = Game.Reality.Rewards.GetValue();
+                foreach (var reward in tableTest.InteractionTable)
+                {
+                    Logger.WriteLine($"Interaction Table Reward: {reward.Id.Value.ToString()}");
+                }
 
+                checkForItem();
 
 
 
             }
 
 
-            logicTest();
-            randomGeneration();
+            
 
 
             if (Keyboard.IsPressed(Key.LeftArrow))
@@ -366,20 +398,14 @@ namespace NoMansSky.ModTemplate
             itemTable.Table.Add(clonableEntry);
             Game.Reality.Products_NMS.SetValue(itemTable);
             
-            var specialTable = Game.Reality.PurchaseableSpecials.GetValue();
-            var clonableSpecialEntry = specialTable.Table[1];
-            clonableSpecialEntry.ID.Value = "FREIGHTER_PASS";
-            clonableSpecialEntry.IsConsumable = true;
-            clonableSpecialEntry.MissionTier = 1;
-            clonableSpecialEntry.ShopNumber = 1;
-            Game.Reality.PurchaseableSpecials.SetValue(specialTable);
+            
 
         }
 
 
         private void coloursLoaded(IColorsFile colourFile)
         {
-            colourFile.Modify<GcWeatherColourSettings>(allColours =>
+            colourFile.ModifyAsync<GcWeatherColourSettings>(allColours =>
 
             {
                 foreach(var genericSetting in allColours.GenericSettings.Settings)
@@ -470,122 +496,125 @@ namespace NoMansSky.ModTemplate
 
         private void planetLoaded(IPlanet planet)
         {
-            planet.ModifyPlanetData(planetData =>
+
+            CurrentSystem.ForEachPlanetAsync(planet =>
             {
-                //Testing
-                Logger.WriteLine($"{planetData.GenerationData.Biome.Biome.ToString()} Planet {planetData.Name.Value} has been loaded");
-
-
-
-                //Testing Names
-                var initialName = planetData.Name.Value;
-                planetData.Name.Value = ($"Corrupted Planet: {initialName}");
-
-                //Randomize Colours
-                foreach(var pallette in planetData.Colours.Palettes)
+                planet.ModifyPlanetDataAsync(planetData =>
                 {
-                    for(var i=0; i< pallette.Colours.Length; i++)
-                    {
-                        
-                        pallette.Colours[i] = colourRandomizer();
+                    //Testing
+                    Logger.WriteLine($"{planetData.GenerationData.Biome.Biome.ToString()} Planet {planetData.Name.Value} has been loaded");
 
-                        
+
+
+                    //Testing Names
+                    var initialName = planetData.Name.Value;
+                    planetData.Name.Value = ($"Corrupted Planet: {initialName}");
+
+                    //Randomize Colours
+                    foreach (var pallette in planetData.Colours.Palettes)
+                    {
+                        for (var i = 0; i < pallette.Colours.Length; i++)
+                        {
+
+                            pallette.Colours[i] = colourRandomizer();
+
+
+                        }
+
                     }
 
-                }
+                    //Randomize Atmos
+                    var atmosChance = Random.Range(0, 100);
+                    if (atmosChance < 30)
+                    {
+                        planetData.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.None;
+                    }
+                    else if (atmosChance > 30)
+                    {
+                        planetData.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.Normal;
+                    }
 
-                //Randomize Atmos
-                var atmosChance = Random.Range(0, 100);
-                if (atmosChance < 30)
-                {
-                    planetData.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.None;
-                }
-                else if(atmosChance > 30)
-                {
-                    planetData.Weather.AtmosphereType = GcPlanetWeatherData.AtmosphereTypeEnum.Normal;
-                }
-                
-                //Randomize Sentinels
-                var aeronChance = Random.Range(0, 2);
-                if(aeronChance == 0)
-                {
-                    planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Low;
-                    planetData.SentinelData.MaxActiveDrones = Random.Range(0, 8);
-                }
-                else if(aeronChance == 1)
-                {
-                    planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Default;
-                    planetData.SentinelData.MaxActiveDrones = Random.Range(9, 16);
-                }
-                else if (aeronChance == 2)
-                {
-                    planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Aggressive;
-                    planetData.SentinelData.MaxActiveDrones = Random.Range(17, 24);
-                }
+                    //Randomize Sentinels
+                    var aeronChance = Random.Range(0, 2);
+                    if (aeronChance == 0)
+                    {
+                        planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Low;
+                        planetData.SentinelData.MaxActiveDrones = Random.Range(0, 8);
+                    }
+                    else if (aeronChance == 1)
+                    {
+                        planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Default;
+                        planetData.SentinelData.MaxActiveDrones = Random.Range(9, 16);
+                    }
+                    else if (aeronChance == 2)
+                    {
+                        planetData.SentinelData.SentinelLevel = GcPlanetSentinelData.SentinelLevelEnum.Aggressive;
+                        planetData.SentinelData.MaxActiveDrones = Random.Range(17, 24);
+                    }
 
-                //Randomize Resource Chance
-                planetData.ResourceLevel = Random.GetEnum<GcPlanetData.ResourceLevelEnum>();
+                    //Randomize Resource Chance
+                    planetData.ResourceLevel = Random.GetEnum<GcPlanetData.ResourceLevelEnum>();
 
 
-                //Randomize Life (Flora) Chance
-                planetData.Life.LifeSetting = Random.GetEnum <GcPlanetLife.LifeSettingEnum>();
+                    //Randomize Life (Flora) Chance
+                    planetData.Life.LifeSetting = Random.GetEnum<GcPlanetLife.LifeSettingEnum>();
 
 
-                //Randomize Creature(Fauna) Chance
-                planetData.CreatureLife.LifeSetting = Random.GetEnum<GcPlanetLife.LifeSettingEnum>();
+                    //Randomize Creature(Fauna) Chance
+                    planetData.CreatureLife.LifeSetting = Random.GetEnum<GcPlanetLife.LifeSettingEnum>();
 
-                //Activate All Terrain Features
-                foreach (var feature in planetData.Terrain.Features)
-                {
-                    feature.Active = true;
-                }
+                    //Activate All Terrain Features
+                    foreach (var feature in planetData.Terrain.Features)
+                    {
+                        feature.Active = true;
+                    }
 
-                //Randomize Building Density
-                planetData.BuildingLevel.BuildingDensity = Random.GetEnum<GcBuildingDensityLevels.BuildingDensityEnum>();
+                    //Randomize Building Density
+                    planetData.BuildingLevel.BuildingDensity = Random.GetEnum<GcBuildingDensityLevels.BuildingDensityEnum>();
 
-                //Randomize Alien Race Chance
-                planetData.InhabitingRace.AlienRace = Random.GetEnum<GcAlienRace.AlienRaceEnum>();
+                    //Randomize Alien Race Chance
+                    planetData.InhabitingRace.AlienRace = Random.GetEnum<GcAlienRace.AlienRaceEnum>();
 
-                //Randomize Water HeavyAir Colours
-                foreach(var heavyAirColour in planetData.Water.HeavyAir.Colours)
-                {
-                    
-                    heavyAirColour.Colour1 = colourRandomizer();
-                    heavyAirColour.Colour2 = colourRandomizer();
+                    //Randomize Water HeavyAir Colours
+                    foreach (var heavyAirColour in planetData.Water.HeavyAir.Colours)
+                    {
 
-                }
+                        heavyAirColour.Colour1 = colourRandomizer();
+                        heavyAirColour.Colour2 = colourRandomizer();
 
-                //Randomize Weather HeavyAir Colours
-                foreach(var weatherHeavyAir in planetData.Weather.HeavyAir.Colours)
-                {
-                    
-                    weatherHeavyAir.Colour1 = colourRandomizer();
-                    weatherHeavyAir.Colour2 = colourRandomizer();
+                    }
 
-                }
+                    //Randomize Weather HeavyAir Colours
+                    foreach (var weatherHeavyAir in planetData.Weather.HeavyAir.Colours)
+                    {
 
-                //Randomize Tile Colours
-                for(var i=0;i<planetData.TileColours.Length;i++)
-                {
-                    
-                    planetData.TileColours[i] = colourRandomizer();
-                }
+                        weatherHeavyAir.Colour1 = colourRandomizer();
+                        weatherHeavyAir.Colour2 = colourRandomizer();
 
-               
+                    }
 
-                //Ring Colours
-                planetData.Rings.Colour1 = colourRandomizer();
-                planetData.Rings.Colour2 = colourRandomizer();
+                    //Randomize Tile Colours
+                    for (var i = 0; i < planetData.TileColours.Length; i++)
+                    {
 
-                //Change Screen Filters
-                planetData.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.Default;
-                planetData.Weather.StormScreenFilter.ScreenFilter = Random.GetEnum<GcScreenFilters.ScreenFilterEnum>();
+                        planetData.TileColours[i] = colourRandomizer();
+                    }
 
-                //Enlarge Caves
-                planetData.Terrain.MinimumCaveDepth = 100;
 
-            }
-            );
+
+                    //Ring Colours
+                    planetData.Rings.Colour1 = colourRandomizer();
+                    planetData.Rings.Colour2 = colourRandomizer();
+
+                    //Change Screen Filters
+                    planetData.Weather.ScreenFilter.ScreenFilter = GcScreenFilters.ScreenFilterEnum.Default;
+                    planetData.Weather.StormScreenFilter.ScreenFilter = Random.GetEnum<GcScreenFilters.ScreenFilterEnum>();
+
+                    //Enlarge Caves
+                    planetData.Terrain.MinimumCaveDepth = 100;
+                });
+            });
+            
             
           
         }
@@ -619,127 +648,11 @@ namespace NoMansSky.ModTemplate
         }
             
            
-        /*
-        private void graphicsTestEnable()
-        {
-            var memMgr = new MemoryManager();
-            memMgr.SetValue("GcGraphicsGlobals.Redo_On", true);
-            memMgr.SetValue("GcGraphicsGlobals.ShadowQuantized", false);
-            memMgr.SetValue("GcGraphicsGlobals.DOFEnableBokeh", true);
-            memMgr.SetValue("GcGraphicsGlobals.UseImposters", false);
-            memMgr.SetValue("GcGraphicsGlobals.UseTaaResolve", true);
-            //memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", true);
-            
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaBuf", true);
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaVarianceBuf", true);
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", true);
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", true);
-            
-            memMgr.SetValue("GcGraphicsGlobals.ForceStreamAllTextures", true);
-            memMgr.SetValue("GcGraphicsGlobals.ForceEvictAllTextures", true);
-            memMgr.SetValue("GcGraphicsGlobals.TargetTextureMemUsageMB", 1600);
-            Logger.WriteLine("Applied Developer Graphical Settings");
-        }
+       
 
-        private void graphicsTestDisable()
-        {
-            var memMgr = new MemoryManager();
-            memMgr.SetValue("GcGraphicsGlobals.Redo_On", false);
-            memMgr.SetValue("GcGraphicsGlobals.ShadowQuantized", true);
-            memMgr.SetValue("GcGraphicsGlobals.DOFEnableBokeh", false);
-            memMgr.SetValue("GcGraphicsGlobals.UseImposters", true);
-            memMgr.SetValue("GcGraphicsGlobals.UseTaaResolve", false);
-            //memMgr.SetValue("GcGraphicsGlobals.ApplyTaaTest", false);
-            
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaBuf", false);
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaVarianceBuf", false);
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", false);
-            memMgr.SetValue("GcGraphicsGlobals.ShowTaaNVarianceBuf", false);
-            
-            memMgr.SetValue("GcGraphicsGlobals.ForceStreamAllTextures", false);
-            memMgr.SetValue("GcGraphicsGlobals.ForceEvictAllTextures", false);
-            memMgr.SetValue("GcGraphicsGlobals.TargetTextureMemUsageMB", 1280);
-            Logger.WriteLine("Disabled Developer Graphical Settings");
-        }
-        */
+        
 
-        private void logicTest()
-        {
-            var initialShield = Game.Player.Shield;
-            var memMgr = new MemoryManager();
-
-            if (Game.IsInGame)
-            {
-                if (initialShield < 38)
-                {
-
-
-                    memMgr.SetValue("GcGameplayGlobals.WaterLandingDamageMultiplier", 0.000f);
-
-                    memMgr.SetValue("GcPlayerGlobals.HealthRechargeMinTimeSinceDamage", 1);
-
-                    memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 1);
-
-                    memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 1);
-
-                    memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.5);
-
-                    memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.25);
-
-                }
-
-                else
-                {
-                    memMgr.SetValue("GcGameplayGlobals.WaterLandingDamageMultiplier", 0.333f);
-
-                    memMgr.SetValue("GcPlayerGlobals.HealthRechargeMinTimeSinceDamage", 10);
-
-                    memMgr.SetValue("GcPlayerGlobals.ShieldRechargeMinTimeSinceDamage", 30);
-
-                    memMgr.SetValue("GcSpaceshipGlobals.ShieldRechargeMinHitTime", 60);
-
-                    memMgr.SetValue("GcPlayerGlobals.WeaponZoomFOV", 0.7);
-
-                    memMgr.SetValue("GcPlayerGlobals.WeaponChangeModeTime", 0.75);
-
-                }
-
-            }
-
-        }
-
-        private void randomGeneration()
-        {
-            if (Game.IsInGame)
-            {
-                var memMgr = new MemoryManager();
-
-                memMgr.SetValue("GcTerrainGlobals.MinHighWaterLevel",  Random.Range(0, 300));
-                memMgr.SetValue("GcTerrainGlobals.MaxHighWaterLevel",  Random.Range(300, 600));
-
-                memMgr.SetValue("GcTerrainGlobals.NumGeneratorCalls",  Random.Range(0, 16));
-                memMgr.SetValue("GcTerrainGlobals.NumPolygoniseCalls",  Random.Range(0, 16));
-                memMgr.SetValue("GcTerrainGlobals.NumPostPolygoniseCalls",  Random.Range(0, 16));
-               
-
-                memMgr.SetValue("GcSimulationGlobals.ProceduralBuildingsGenerationSeed",  Random.Range(0, 2147483647));
-
-                memMgr.SetValue("GcSolarGenerationGlobals.SolarSystemMaximumRadius",  Random.Range(0, 2147483647));
-
-                
-                /*
-                Colour newRed = memMgr.GetValue<Colour>("GcGameplayGlobals.ScannerColour1");
-                newRed.R = Random.Range(0.000f, 1.000f);
-                newRed.G = Random.Range(0.000f, 1.000f);
-                newRed.B = Random.Range(0.000f, 1.000f);
-                newRed.A = 1.000f;
-
-                memMgr.SetValue("GcGameplayGlobals.ScannerColour1", newRed);
-               */ 
-
-
-            }
-        }
+        
 
       
 
