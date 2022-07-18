@@ -52,6 +52,37 @@ namespace NoMansSky.ModTemplate
 
         }
 
+        private void waterBounce()
+        {
+            if (Game.IsInGame)
+            {
+                CurrentSystem.ForEachPlanet(planet =>
+                {
+
+
+                    planet.ModifyPlanetDataAsync(planetData =>
+                    {
+                    LOOP:
+                        planetData.Terrain.SeaLevel = planetData.Terrain.SeaLevel + 1;
+                        Logger.WriteLine($"Async Modified {planetData.Name.Value.ToString()}");
+
+                        if (planetData.Terrain.SeaLevel == 70)
+                        {
+                            planetData.Terrain.SeaLevel = planetData.Terrain.SeaLevel - 1;
+                            Logger.WriteLine($"Async Modified {planetData.Name.Value.ToString()}");
+                        }
+
+                        if (planetData.Terrain.SeaLevel == 10)
+                        {
+                            goto LOOP;
+                        }
+
+                    });
+
+
+                });
+            }
+        }
         private void randomizeGalaxyMapColours()
         {
             var galaxyGlobal = Game.Globals.GalaxyGlobals.GetValue<GcGalaxyGlobals>();
@@ -273,12 +304,14 @@ namespace NoMansSky.ModTemplate
                 
                 randomizeGalaxyMapColours();
 
-                Game.CurrentSystem.ModifySystemDataAsync(systemData =>
+                Game.Creatures.CreatureBehaviors.ModifyAsync(behaviors =>
                 {
-                    systemData.ConflictData.ConflictLevel = Random.GetEnum<GcPlayerConflictData.ConflictLevelEnum>();
-                    Logger.WriteLine($"Current Conflict Level: {systemData.ConflictData.ConflictLevel}");
-                });
+                    foreach(var behavior in behaviors.BehaviourTree)
+                    {
+                        Logger.WriteLine($"Behavior Value:[{behavior.Id.Value}] Loaded");
+                    }
 
+                });
                     CurrentSystem.ForEachPlanet(planet =>
                     {
                         
@@ -293,7 +326,7 @@ namespace NoMansSky.ModTemplate
 
                             planetData.Weather.AtmosphereType = Random.GetEnum<GcPlanetWeatherData.AtmosphereTypeEnum>();
                             planetData.GenerationData.Seed.Seed = Random.Range(0, 9223372036854775807);
-                            planetData.Terrain.SeaLevel = Random.Range(0, 900);
+                            planetData.Terrain.SeaLevel = planetData.Terrain.SeaLevel + 1;
                             Logger.WriteLine($"Async Modified {planetData.Name.Value.ToString()}");
 
                         });
@@ -305,6 +338,26 @@ namespace NoMansSky.ModTemplate
                 
 
 
+            }
+
+            
+
+            if (Keyboard.IsPressed(Key.DownArrow))
+            {
+                CurrentSystem.ForEachPlanet(planet =>
+                {
+
+
+                    planet.ModifyPlanetDataAsync(planetData =>
+                    {
+                        
+                        planetData.Terrain.SeaLevel = planetData.Terrain.SeaLevel - 1;
+                        Logger.WriteLine($"Async Modified {planetData.Name.Value.ToString()}");
+
+                    });
+
+
+                });
             }
 
             if (Keyboard.IsHeld(Key.Control))
@@ -330,7 +383,7 @@ namespace NoMansSky.ModTemplate
 
 
 
-            if (Keyboard.IsPressed(Key.DownArrow))
+            if (Keyboard.IsPressed(Key.RightArrow))
             {
                 var invBalance = Game.Player.DefaultInventoryBalance.GetValue();
                 invBalance.DefaultSubstanceMaxAmount = 999999;
