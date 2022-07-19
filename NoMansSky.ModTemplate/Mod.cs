@@ -46,43 +46,13 @@ namespace NoMansSky.ModTemplate
             Game.Reality.Products_NMS.OnLoaded.AddListener(createItems);
             Game.Reality.FrigateFlybyTable.OnLoaded.AddListener(setFlybys);
             Game.Reality.PurchaseableSpecials.OnLoaded.AddListener(setSpecials);
-
+            
 
 
 
         }
 
-        private void waterBounce()
-        {
-            if (Game.IsInGame)
-            {
-                CurrentSystem.ForEachPlanet(planet =>
-                {
-
-
-                    planet.ModifyPlanetDataAsync(planetData =>
-                    {
-                    LOOP:
-                        planetData.Terrain.SeaLevel = planetData.Terrain.SeaLevel + 1;
-                        Logger.WriteLine($"Async Modified {planetData.Name.Value.ToString()}");
-
-                        if (planetData.Terrain.SeaLevel == 70)
-                        {
-                            planetData.Terrain.SeaLevel = planetData.Terrain.SeaLevel - 1;
-                            Logger.WriteLine($"Async Modified {planetData.Name.Value.ToString()}");
-                        }
-
-                        if (planetData.Terrain.SeaLevel == 10)
-                        {
-                            goto LOOP;
-                        }
-
-                    });
-
-
-                });
-            }
-        }
+        
         private void randomizeGalaxyMapColours()
         {
             var galaxyGlobal = Game.Globals.GalaxyGlobals.GetValue<GcGalaxyGlobals>();
