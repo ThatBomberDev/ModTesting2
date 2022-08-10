@@ -7,6 +7,7 @@ using libMBIN.NMS.GameComponents;
 using libMBIN.NMS.Globals;
 using libMBIN.NMS.Toolkit;
 using libMBIN.NMS;
+using System.Windows.Forms;
 
 
 namespace NoMansSky.ModTemplate
@@ -43,15 +44,46 @@ namespace NoMansSky.ModTemplate
 
             Game.Colors.WaterColors.OnLoaded.AddListener(waterColours);
 
+            Game.Colors.BaseColors.OnLoaded.AddListener(testing);
             Game.Reality.Products_NMS.OnLoaded.AddListener(createItems);
             Game.Reality.FrigateFlybyTable.OnLoaded.AddListener(setFlybys);
             Game.Reality.PurchaseableSpecials.OnLoaded.AddListener(setSpecials);
-            
+
+            Game.Weather.OnWeatherEffectLoaded.AddListener(weatherEffect => weatherTesting(weatherEffect));
 
 
 
         }
+        private void weatherTesting(IWeatherEffect weatherEffect)
+        {
+            weatherEffect.ModifyAsync(effect =>
+            {
+                foreach(var efct in effect.Effects)
+                {
+                    efct.SpawnConditions = GcWeatherEffect.SpawnConditionsEnum.Anytime;
+                    efct.MaxHazardsOfThisTypeActive = 20;
+                    efct.WeatherEffectSpawnType = GcWeatherEffect.WeatherEffectSpawnTypeEnum.Cluster;
+                    efct.Audio.AkEvent = GcAudioWwiseEvents.AkEventEnum.HEXAGON;
+                    efct.FadeoutVisuals = true;
+                    
+                }
+            });
+        }
 
+        private void testing()
+        {
+            Game.Colors.BaseColors.ModifyAsync(GcPalette =>
+            {
+                foreach(var pallete in GcPalette.Palettes)
+                {
+                    for(var i = 0; i < pallete.Colours.Length; i++)
+                    {
+                        pallete.Colours[i] = colourRandomizer();
+                        Logger.WriteLine("Modified Base Colour");
+                    } 
+                }
+            });
+        }
         
         private void randomizeGalaxyMapColours()
         {
@@ -113,15 +145,34 @@ namespace NoMansSky.ModTemplate
                 foreach (var setting in nightSkyColours.Settings)
                 {
                     setting.CloudColour1 = colourRandomizer();
+                    setting.CloudColour1.A = Random.Range(0.000f, 1.000f);
+                    
                     setting.CloudColour2 = colourRandomizer();
+                    setting.CloudColour2.A = Random.Range(0.000f, 1.000f);
+                    
                     setting.FogColour = colourRandomizer();
+                    setting.FogColour.A = Random.Range(0.000f, 1.000f);
+
                     setting.HeightFogColour = colourRandomizer();
+                    setting.HeightFogColour.A = Random.Range(0.000f, 1.000f);
+
                     setting.HorizonColour = colourRandomizer();
+                    setting.HorizonColour.A = Random.Range(0.000f, 1.000f);
+
                     setting.LightColour = colourRandomizer();
+                    setting.LightColour.A = Random.Range(0.000f, 1.000f);
+
                     setting.SkyColour = colourRandomizer();
+                    setting.SkyColour.A = Random.Range(0.000f, 1.000f);
+
                     setting.SkySolarColour = colourRandomizer();
+                    setting.SkySolarColour.A = Random.Range(0.000f, 1.000f);
+
                     setting.SkyUpperColour = colourRandomizer();
+                    setting.SkyUpperColour.A = Random.Range(0.000f, 1.000f);
+
                     setting.SunColour = colourRandomizer();
+                    setting.SunColour.A = Random.Range(0.000f, 1.000f);
                 }
             });
         }
@@ -232,14 +283,7 @@ namespace NoMansSky.ModTemplate
         private void systemLoaded()
         {
             var systemData = CurrentSystem.GetSystemData();
-            Logger.WriteLine($"Aquired System: {systemData.Name.Value.ToString()}");
-            Logger.WriteLine($"System Race: {systemData.InhabitingRace.AlienRace.ToString()}");
-            Logger.WriteLine($"Maximum System Freighters: {systemData.MaxNumFreighters}");
-            
-            /*
-            CurrentSystem.SetSystemData(systemData);
-            Logger.WriteLine($"Set System");
-            */
+            Logger.WriteLine($"Entered {systemData.Name.Value.ToString()}");
         }
 
         public Colour colourRandomizer()
@@ -251,7 +295,7 @@ namespace NoMansSky.ModTemplate
             newColour.R = Random.Range(0.000f, 1.000f);
             newColour.G = Random.Range(0.000f, 1.000f);
             newColour.B = Random.Range(0.000f, 1.000f);
-            newColour.A = Random.Range(0.500f, 1.000f);
+            newColour.A = 1.000f;
 
             return newColour;
 
@@ -270,18 +314,12 @@ namespace NoMansSky.ModTemplate
                 duskColours();
                 nightColours();
                 waterColours();
-
+                testing();
+                
                 
                 randomizeGalaxyMapColours();
 
-                Game.Creatures.CreatureBehaviors.ModifyAsync(behaviors =>
-                {
-                    foreach(var behavior in behaviors.BehaviourTree)
-                    {
-                        Logger.WriteLine($"Behavior Value:[{behavior.Id.Value}] Loaded");
-                    }
-
-                });
+                
                     CurrentSystem.ForEachPlanet(planet =>
                     {
                         
@@ -330,25 +368,7 @@ namespace NoMansSky.ModTemplate
                 });
             }
 
-            if (Keyboard.IsHeld(Key.Control))
-            {
-                if (Keyboard.IsPressed(Key.UpArrow))
-                {
-                    Logger.WriteLine($"Testing Combination Hotkeys...");
-
-                    var playerInv = Game.Player.Exosuit.GetInventory();
-                    var invList = playerInv.GetItems();
-                    foreach (var item in invList)
-                    {
-                        if (item.ID == "FUEL1")
-                        {
-                            item.Amount = 9999;
-                        }
-
-                    }
-
-                }
-            }
+            
 
 
 
@@ -370,14 +390,6 @@ namespace NoMansSky.ModTemplate
 
 
                 }
-
-
-                var tableTest = Game.Reality.Rewards.GetValue();
-                foreach (var reward in tableTest.InteractionTable)
-                {
-                    Logger.WriteLine($"Interaction Table Reward: {reward.Id.Value.ToString()}");
-                }
-
                 checkForItem();
 
 
@@ -401,7 +413,7 @@ namespace NoMansSky.ModTemplate
 
 
                 }
-                structTest();
+                
 
             }
 
@@ -665,6 +677,15 @@ namespace NoMansSky.ModTemplate
                 Logger.WriteLine($"Combat Effect: {GcCombatEffectsTableInMem.EffectsData[i].ParticlesId.Value.ToString()} is active");
 
 
+            }
+            
+
+            var aiSpaceshipManagerAddress = Game.MBinManager.GetMBin("METADATA/SIMULATION/SPACE/AISPACESHIPMANAGER.MBIN").Address;
+            var GcAISpaceshipManagerDataInMem = memMgr.GetValue<GcAISpaceshipManagerData>(aiSpaceshipManagerAddress);
+            Logger.WriteLine($"Spaceship Manager Loaded");
+            foreach(var playerShip in GcAISpaceshipManagerDataInMem.SystemSpaceships[0].Spaceships)
+            {
+                Logger.WriteLine($"Loaded PlayerShip: {playerShip.Filename.Value.ToString()}");
             }
 
 
